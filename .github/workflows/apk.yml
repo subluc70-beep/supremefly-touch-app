@@ -20,17 +20,17 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Build
+      - name: Preparar e Build
         run: |
           pip install flet
-          # Forçamos o Flet a reconhecer a pasta atual como um projeto
+          # Força a criação dos arquivos de suporte do Android
           flet create . --template app --force
-          # Executamos o build garantindo o nome do projeto
-          flet build apk --project-name "supremeapp" --org "com.supreme"
+          # Roda o build de forma simplificada
+          flet build apk
 
-      - name: Enviar APK
+      - name: Upload
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: App-Instalador
+          name: App-Supreme
           path: build/apk/*.apk
