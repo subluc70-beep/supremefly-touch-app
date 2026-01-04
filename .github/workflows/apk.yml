@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configurar Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -15,14 +15,16 @@ jobs:
       - name: Instalar Flet
         run: pip install flet
 
-      - name: Preparar e Construir APK
+      - name: Forçar Criação do Projeto e Build
         run: |
-          flet create . --template brief-app
+          # Isso cria os arquivos que o Android precisa
+          flet create . --template app --force
+          # Isso constrói o APK ignorando avisos bobos
           flet build apk --verbose
 
       - name: Enviar APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: App-Supreme
+          name: App-Supreme-Instalador
           path: build/apk/*.apk
