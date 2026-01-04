@@ -1,30 +1,9 @@
-name: Gerar APK
-on: [push, workflow_dispatch]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Instalar Flet
-        run: pip install flet
-
-      - name: Forçar Criação do Projeto e Build
+- name: Forçar Construção Limpa
         run: |
-          # Isso cria os arquivos que o Android precisa
+          pip install flet
+          # Limpa qualquer rastro de builds que falharam
+          rm -rf build
+          # Cria o projeto do zero de forma silenciosa
           flet create . --template app --force
-          # Isso constrói o APK ignorando avisos bobos
+          # Tenta construir o APK ignorando avisos de versão
           flet build apk --verbose
-
-      - name: Enviar APK
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: App-Supreme-Instalador
-          path: build/apk/*.apk
