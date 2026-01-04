@@ -1,9 +1,30 @@
-- name: Forçar Construção Limpa
+name: Build_App
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Preparar
         run: |
           pip install flet
-          # Limpa qualquer rastro de builds que falharam
-          rm -rf build
-          # Cria o projeto do zero de forma silenciosa
           flet create . --template app --force
-          # Tenta construir o APK ignorando avisos de versão
-          flet build apk --verbose
+
+      - name: Build
+        run: flet build apk
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: App-Supreme
+          path: build/apk/*.apk
