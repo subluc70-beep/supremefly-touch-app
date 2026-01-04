@@ -10,23 +10,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Python
+      - name: Configurar Java (Necessario para Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Instalacao e Preparo
+      - name: Instalar Flet e Preparar
         run: |
           pip install flet
           flet create . --template app --force
 
       - name: Build do APK
         run: |
-          # Aqui é a parte do RUN que você perguntou:
-          flet build apk --project-name supremeapp --org com.supreme --verbose
+          # Adicionamos o nome do projeto e da organizacao para evitar erro de identidade
+          flet build apk --project-name supremeapp --org com.supreme
 
-      - name: Upload
+      - name: Upload do Resultado
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: App-Supreme
+          name: App-Supreme-Final
           path: build/apk/*.apk
