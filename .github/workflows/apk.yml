@@ -1,19 +1,28 @@
 name: Gerar APK
-on: 
-  push:
-  workflow_dispatch:
+on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install flet
-      - run: flet build apk
-      - uses: actions/upload-artifact@v4
+
+      - name: Instalar Flet
+        run: pip install flet
+
+      - name: Preparar e Construir APK
+        run: |
+          flet create . --template brief-app
+          flet build apk --verbose
+
+      - name: Enviar APK
+        if: success()
+        uses: actions/upload-artifact@v4
         with:
-          name: App-Supreme-Touch
+          name: App-Supreme
           path: build/apk/*.apk
