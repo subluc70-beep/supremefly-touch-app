@@ -8,23 +8,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      
+      - name: Java
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - uses: actions/setup-python@v5
+
+      - name: Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Instalacao
+      - name: Build
         run: |
           pip install flet
-          flet create . --template app --force 
+          # Forçamos o Flet a reconhecer a pasta atual como um projeto
+          flet create . --template app --force
+          # Executamos o build garantindo o nome do projeto
+          flet build apk --project-name "supremeapp" --org "com.supreme"
 
-      - name: Build
-        run: flet build apk --verbose
-
-      - name: Upload
+      - name: Enviar APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
