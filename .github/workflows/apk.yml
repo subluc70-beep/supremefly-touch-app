@@ -20,13 +20,15 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Preparar e Build
+      - name: Instalar Flet
         run: |
           pip install flet
-          # Força a criação dos arquivos de suporte do Android
-          flet create . --template app --force
-          # Roda o build de forma simplificada
-          flet build apk
+
+      - name: Build do APK
+        run: |
+          # Removemos o --force que causou o erro
+          # E garantimos que o build aconteça
+          flet build apk --verbose
 
       - name: Upload
         if: success()
