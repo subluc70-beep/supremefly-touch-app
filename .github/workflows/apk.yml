@@ -7,33 +7,27 @@ jobs:
   construir:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configurar Java (Necessario para Android)
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - name: Configurar Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Instalar Flet e Preparar
+      - name: Instalacao
         run: |
           pip install flet
-          flet create . --template app --force
+          # Esse comando cria a estrutura se ela não existir
+          flet create . --template app --force 
 
-      - name: Build do APK
-        run: |
-          # Adicionamos o nome do projeto e da organizacao para evitar erro de identidade
-          flet build apk --project-name supremeapp --org com.supreme
+      - name: Build
+        run: flet build apk --verbose
 
-      - name: Upload do Resultado
+      - name: Upload
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: App-Supreme-Final
+          name: App-Instalador
           path: build/apk/*.apk
