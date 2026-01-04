@@ -19,7 +19,6 @@ jobs:
       - name: Instalacao
         run: |
           pip install flet
-          # Esse comando cria a estrutura se ela não existir
           flet create . --template app --force 
 
       - name: Build
