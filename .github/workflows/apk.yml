@@ -21,14 +21,11 @@ jobs:
           python-version: '3.11'
 
       - name: Instalar Flet
-        run: |
-          pip install flet
+        run: pip install flet
 
       - name: Build do APK
         run: |
-          # Removemos o --force que causou o erro
-          # E garantimos que o build aconteça
-          flet build apk --verbose
+          yes | flet build apk --verbose
 
       - name: Upload
         if: success()
