@@ -1,21 +1,42 @@
-import flet as ft
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.core.window import Window
 
-def main(page: ft.Page):
-    page.title = "SUPREME FLY"
-    page.bgcolor = "#050505"
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-
-    page.add(
-        ft.Icon(ft.icons.TARGET, size=100, color="#39FF14"),
-        ft.Text("SUPREME FLY ATIVO", size=24, color="white", weight="bold"),
-        ft.ElevatedButton(
-            "CONECTAR SISTEMA",
-            width=250,
-            style=ft.ButtonStyle(bgcolor="#1A1A1A", color="#39FF14")
+class SupremeFlyApp(App):
+    def build(self):
+        # Definindo a cor de fundo (Preto escuro)
+        Window.clearcolor = (0.02, 0.02, 0.02, 1)
+        
+        # Layout principal
+        layout = BoxLayout(orientation='vertical', padding=40, spacing=20)
+        
+        # Título
+        self.label = Label(
+            text='SUPREME FLY',
+            font_size='32sp',
+            bold=True,
+            color=(0.22, 1, 0.08, 1) # Verde Neon
         )
-    )
-    page.update()
-if __name__ == "__main__":
-    # Mudamos para o modo que mais funciona em celulares com bloqueio de rede
-    ft.app(target=main, view=ft.AppView.WEB_BROWSER)
+        
+        # Botão de Ativação
+        btn = Button(
+            text='CONECTAR SISTEMA',
+            size_hint=(1, 0.2),
+            background_color=(0.1, 0.1, 0.1, 1),
+            color=(1, 1, 1, 1)
+        )
+        btn.bind(on_press=self.ativar)
+
+        layout.add_widget(self.label)
+        layout.add_widget(btn)
+        
+        return layout
+
+    def ativar(self, instance):
+        self.label.text = "SISTEMA ATIVO!"
+        self.label.color = (1, 1, 1, 1)
+
+if __name__ == '__main__':
+    SupremeFlyApp().run()
