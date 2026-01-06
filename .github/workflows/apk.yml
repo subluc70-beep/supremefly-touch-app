@@ -8,31 +8,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Java
+
+      - name: Java Setup
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Python
+      - name: Python Setup
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # PASSO CRUCIAL: Instalar dependências necessárias para compilação Android
-      - name: Instalar Dependências
+      # ESTE PASSO RESOLVE O ERRO 100
+      - name: Instalar Flet e Dependências
         run: |
           pip install flet
           sudo apt-get update
-          sudo apt-get install -y setproctitle python3-pip
+          sudo apt-get install -y setproctitle
 
       - name: Build do APK
         run: |
-          # O flet build cria a estrutura necessária automaticamente
-          flet build apk --verbose
+          # O comando 'yes' aceita as licenças do Android automaticamente
+          yes | flet build apk --verbose
 
-      - name: Upload APK
+      - name: Upload
         if: success()
         uses: actions/upload-artifact@v4
         with:
