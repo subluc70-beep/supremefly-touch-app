@@ -9,32 +9,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Java Setup
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Python Setup
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # ESTE PASSO RESOLVE O ERRO 100
-      - name: Instalar Flet e Dependências
+      - name: Instalar Flet e Dependencias
         run: |
           pip install flet
+          # O Flet precisa dessa biblioteca no Linux para compilar
           sudo apt-get update
           sudo apt-get install -y setproctitle
 
       - name: Build do APK
         run: |
-          # O comando 'yes' aceita as licenças do Android automaticamente
+          # O comando 'yes' responde "sim" para todas as licenças do Android automaticamente
+          # Isso evita o erro 100
           yes | flet build apk --verbose
 
-      - name: Upload
+      - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: App-Supreme
+          name: App-Supreme-Touch
           path: build/apk/*.apk
