@@ -3,10 +3,10 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.slider import MDSlider
-from kivymd.uix.button import MDRaisedButton, MDFillRoundFlatButton
+from kivymd.uix.button import MDFillRoundFlatButton
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
-from jnius import autoclass
+import os
 
 class SupremeFlyApp(MDApp):
     def build(self):
@@ -27,7 +27,7 @@ class SupremeFlyApp(MDApp):
         ))
 
         # Slider Milimétrico (0.1 - 1.0)
-        layout.add_widget(MDLabel(text="SENSIBILIDADE (mm)", halign="center"))
+        layout.add_widget(MDLabel(text="AJUSTE DE SENSIBILIDADE (mm)", halign="center"))
         self.slider = MDSlider(min=0.1, max=1.0, value=0.5, step=0.1, color=get_color_from_hex('#39FF14'))
         self.label_val = MDLabel(text=f"{self.slider.value:.1f} mm", halign="center", font_style="H5")
         self.slider.bind(value=self.update_val)
@@ -35,7 +35,7 @@ class SupremeFlyApp(MDApp):
         layout.add_widget(self.slider)
         layout.add_widget(self.label_val)
 
-        # Botão Suavizar Toque (Toque Reto)
+        # Botão Suavizar Toque
         self.btn_suavizar = MDFillRoundFlatButton(
             text="SUAVIZAR TOQUE: OFF",
             pos_hint={"center_x": .5},
@@ -48,11 +48,19 @@ class SupremeFlyApp(MDApp):
         return screen
 
     def on_start(self):
-        # Tenta conectar ao Shizuku AUTOMATICAMENTE ao abrir o app
-        self.check_shizuku_permission()
+        # COMANDO MESTRE: Tenta ler o Shizuku para forçar o pop-up de autorização
+        try:
+            from jnius import autoclass
+            # Tenta acessar a classe do Shizuku para o Android disparar a permissão
+            autoclass('moe.shizuku.api.ShizukuService')
+        except:
+            # Se não encontrar a classe, tenta via comando de shell (plano B)
+            os.system("pm list packages --user 0 | grep shizuku")
 
     def update_val(self, instance, value):
         self.label_val.text = f"{value:.1f} mm"
+        # Aqui o comando seria enviado via Shizuku se autorizado
+        # os.system(f"settings put system pointer_speed {int(value*10)}")
 
     def toggle_suavizar(self, instance):
         if "OFF" in instance.text:
@@ -61,23 +69,6 @@ class SupremeFlyApp(MDApp):
         else:
             instance.text = "SUAVIZAR TOQUE: OFF"
             instance.md_bg_color = get_color_from_hex('#1A1A1A')
-
-    def check_shizuku_permission(self):
-        # Código para disparar a permissão oficial do Shizuku
-        try:
-            PythonActivity = autoclass('org.kivy.android.PythonActivity')
-            currentActivity = PythonActivity.mActivity
-            PackageManager = autoclass('android.content.pm.PackageManager')
-            
-            # Tenta verificar se o Shizuku permite o acesso
-            # Isso dispara a janela oficial "Allow SupremeFly to access Shizuku?"
-            permission = "moe.shizuku.manager.permission.API_V23"
-            check = currentActivity.checkSelfPermission(permission)
-            
-            if check != PackageManager.PERMISSION_GRANTED:
-                currentActivity.requestPermissions([permission], 1)
-        except Exception as e:
-            print(f"Shizuku Error: {e}")
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
