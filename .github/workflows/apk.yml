@@ -12,7 +12,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Instalar Dependências de Compilação (Fix Exit Code 100)
+      - name: Instalar Dependências Modernas
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -21,7 +21,7 @@ jobs:
             libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
             libsqlite3-dev sqlite3 bzip2 libbz2-dev liblzma-dev libffi-dev \
-            libssl-dev unzip zip libncurses5 libncursesw5-dev libtinfo5 \
+            libssl-dev unzip zip libncurses6 libncursesw6 libtinfo6 \
             cmake libtool autoconf automake pkg-config
 
       - name: Instalar Buildozer e Cython
@@ -31,7 +31,7 @@ jobs:
 
       - name: Build APK com Buildozer
         run: |
-          # O comando 'yes |' responde "sim" automaticamente para as licenças do Android
+          # Aceitando licenças e iniciando build
           yes | buildozer -v android debug
         continue-on-error: false
 
