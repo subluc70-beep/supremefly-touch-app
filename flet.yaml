@@ -1,3 +1,10 @@
-app_name: "SupremeFly"
-description: "Meu App Flet"
-package_name: "com.supreme.flytouch"
+display_name: "SupremeFly"
+product_name: "supremefly"
+executable_name: "supremefly"
+bundle_id: "com.supreme.flytouch"
+version: "1.0.0"
+
+android:
+  permissions:
+    - INTERNET
+    - SYSTEM_ALERT_WINDOW
