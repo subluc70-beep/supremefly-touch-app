@@ -4,16 +4,15 @@ package.name = supremefly
 package.domain = com.supreme.touch
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
-version = 1.0
+version = 1.1
 
-# ESSENCIAL PARA O SHIZUKU E O VISUAL
 requirements = python3,kivy==2.3.0,kivymd,pyjnius,certifi
 
 orientation = portrait
 fullscreen = 1
 
-# PERMISSÕES QUE FAZEM O APP APARECER NO SHIZUKU
-android.permissions = INTERNET, SYSTEM_ALERT_WINDOW, moe.shizuku.manager.permission.API_V23, QUERY_ALL_PACKAGES
+# PERMISSÕES EXPLÍCITAS
+android.permissions = INTERNET, SYSTEM_ALERT_WINDOW, moe.shizuku.manager.permission.API_V23, QUERY_ALL_PACKAGES, WRITE_SECURE_SETTINGS
 
 android.api = 33
 android.minapi = 21
