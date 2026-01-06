@@ -1,42 +1,63 @@
-name: Build_App
-on:
-  push:
-  workflow_dispatch:
+name: Build_Kivy_APK
+on: [push, workflow_dispatch]
 
 jobs:
-  construir:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-
-      - name: Setup Python
+      - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Instalar Flet
-        run: pip install flet
-
-      - name: Build do APK
+      - name: Instalar Dependências do Sistema
         run: |
-          # Aceita licenças e constrói
-          yes | flutter doctor --android-licenses
-          flet build apk --verbose
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            git \
+            python3-dev \
+            ffmpeg \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libsdl2-ttf-dev \
+            libportmidi-dev \
+            libswscale-dev \
+            libavformat-dev \
+            libavcodec-dev \
+            zlib1g-dev \
+            libgstreamer1.0-gstreamer-lite-dev \
+            libgstreamer-plugins-base1.0-dev
 
-      - name: Upload
-        if: success()
+      - name: Instalar Buildozer e Cython
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.33 kivy
+
+      - name: Gerar Arquivo Spec (Configuração do App)
+        run: |
+          if [ ! -f buildozer.spec ]; then
+            buildozer init
+            # Ajustando o nome do app no arquivo gerado automaticamente
+            sed -i 's/^title = .*/title = SupremeFly/' buildozer.spec
+            sed -i 's/^package.name = .*/package.name = supremefly/' buildozer.spec
+            sed -i 's/^package.domain = .*/package.domain = com.supreme/' buildozer.spec
+            sed -i 's/^source.include_exts = .*/source.include_exts = py,png,jpg,kv,atlas/' buildozer.spec
+            sed -i 's/^requirements = .*/requirements = python3,kivy/' buildozer.spec
+            sed -i 's/^orientation = .*/orientation = portrait/' buildozer.spec
+            sed -i 's/^#android.permissions = .*/android.permissions = INTERNET,SYSTEM_ALERT_WINDOW/' buildozer.spec
+          fi
+
+      - name: Build APK com Buildozer
+        run: |
+          yes | buildozer -v android debug
+        continue-on-error: false
+
+      - name: Upload do APK
         uses: actions/upload-artifact@v4
         with:
-          name: App-Supreme
-          path: build/apk/*.apk
+          name: SupremeFly-Kivy-APK
+          path: bin/*.apk
