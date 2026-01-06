@@ -3,7 +3,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # Usando a 22.04 que é mais estável para Buildozer
     steps:
       - uses: actions/checkout@v4
 
@@ -27,18 +27,18 @@ jobs:
             libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
             libsqlite3-dev sqlite3 bzip2 libbz2-dev liblzma-dev libffi-dev \
-            libssl-dev unzip zip libncurses6 libncursesw6 libtinfo6 \
+            libssl-dev unzip zip libncurses5 libncursesw5 libtinfo5 \
             cmake libtool autoconf automake pkg-config
 
-      - name: Instalar Buildozer e Cython
+      - name: Instalar Buildozer e Cython Específico
         run: |
           pip install --upgrade pip
-          pip install buildozer cython==0.29.33 kivy
+          pip install "buildozer==1.5.0" "cython<3.0" kivy
 
-      - name: Build APK com Buildozer
+      - name: Gerar APK
         run: |
-          # O segredo: 'yes' aceita todas as perguntas do Android SDK automaticamente
-          # O buildozer vai baixar o AIDL e o SDK sozinho agora
+          # Limpeza de segurança e build
+          buildozer android clean
           yes | buildozer -v android debug
         continue-on-error: false
 
