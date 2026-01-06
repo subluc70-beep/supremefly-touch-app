@@ -5,56 +5,76 @@ from kivy.uix.button import Button
 from kivy.uix.slider import Slider
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
+import os
 
 class SupremeFlyApp(App):
     def build(self):
-        # Cor de fundo escura para poupar RAM e bateria
-        Window.clearcolor = get_color_from_hex('#050505')
-        
+        # Fundo Preto Puro
+        Window.clearcolor = get_color_from_hex('#000000')
         layout = BoxLayout(orientation='vertical', padding=40, spacing=25)
-        
-        # Título Neon
+
+        # Cabeçalho
         layout.add_widget(Label(
             text='SUPREME FLY PRO',
-            font_size='35sp',
+            font_size='34sp',
             bold=True,
-            color=get_color_from_hex('#39FF14')
+            color=get_color_from_hex('#39FF14') # Verde Neon
         ))
 
-        # --- Ajuste de Sensibilidade ---
-        layout.add_widget(Label(text='Regulação de Sensibilidade', font_size='18sp'))
+        # Indicador de Valor Atual
+        layout.add_widget(Label(text='SENSIBILIDADE ATUAL', font_size='14sp', color=(1,1,1,0.5)))
         
-        # Slider de 0 a 100mm
-        self.slider = Slider(min=0, max=100, value=50, step=1)
-        self.val_label = Label(text=f'{int(self.slider.value)} mm', font_size='25sp', color=get_color_from_hex('#14ccff'))
-        
-        self.slider.bind(value=self.atualizar_texto)
+        # Barra de 0.1 a 1.0
+        self.slider = Slider(min=0.1, max=1.0, value=0.5, step=0.1)
+        self.val_label = Label(text=f'{self.slider.value:.1f} mm', font_size='45sp', bold=True, color=get_color_from_hex('#00E5FF'))
+        self.slider.bind(value=self.atualizar_contagem)
         
         layout.add_widget(self.slider)
         layout.add_widget(self.val_label)
 
-        # --- Botão Shizuku ---
-        self.btn_shizuku = Button(
-            text='VINCULAR AO SHIZUKU',
-            size_hint=(1, 0.3),
+        # Botão Suavizar Toque (O Toque Reto)
+        self.btn_suavizar = Button(
+            text='SUAVIZAR TOQUE: OFF',
+            size_hint=(1, 0.2),
             background_normal='',
-            background_color=get_color_from_hex('#1a1a1a'),
+            background_color=get_color_from_hex('#151515'),
             color=(1, 1, 1, 1)
         )
-        self.btn_shizuku.bind(on_press=self.conectar_shizuku)
+        self.btn_suavizar.bind(on_press=self.toggle_suavizar)
+        layout.add_widget(self.btn_suavizar)
+
+        # Botão Shizuku (Chamada de Sistema)
+        self.btn_shizuku = Button(
+            text='VINCULAR AO SHIZUKU',
+            size_hint=(1, 0.2),
+            background_normal='',
+            background_color=get_color_from_hex('#39FF14'),
+            color=(0, 0, 0, 1),
+            bold=True
+        )
+        self.btn_shizuku.bind(on_press=self.chamar_shizuku)
         layout.add_widget(self.btn_shizuku)
 
         return layout
 
-    def atualizar_texto(self, instance, value):
-        self.val_label.text = f'{int(value)} mm'
+    def atualizar_contagem(self, instance, value):
+        self.val_label.text = f'{value:.1f} mm'
 
-    def conectar_shizuku(self, instance):
-        # Este comando tenta comunicar com o serviço Shizuku
-        self.btn_shizuku.text = "A SOLICITAR ACESSO..."
-        self.btn_shizuku.background_color = get_color_from_hex('#ffaa00')
-        # Log interno para o sistema detectar a tentativa de ligação
-        print("Tentando conexão com moe.shizuku.manager.permission.API_V23")
+    def toggle_suavizar(self, instance):
+        if instance.text == 'SUAVIZAR TOQUE: OFF':
+            instance.text = 'SUAVIZAR TOQUE: ON'
+            instance.background_color = get_color_from_hex('#00E5FF')
+            instance.color = (0, 0, 0, 1)
+        else:
+            instance.text = 'SUAVIZAR TOQUE: OFF'
+            instance.background_color = get_color_from_hex('#151515')
+            instance.color = (1, 1, 1, 1)
+
+    def chamar_shizuku(self, instance):
+        instance.text = "SOLICITANDO..."
+        # Comando para forçar o serviço do Shizuku a reconhecer o App
+        os.system("pm list packages --user 0") 
+        os.system("sh /sdcard/Android/data/moe.shizuku.manager/files/start.sh")
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
