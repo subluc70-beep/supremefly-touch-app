@@ -12,7 +12,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Instalar Dependências Modernas
+      - name: Instalar Dependências do Sistema
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -31,8 +31,8 @@ jobs:
 
       - name: Build APK com Buildozer
         run: |
-          # Aceitando licenças e iniciando build
-          yes | buildozer -v android debug
+          # Agora ele vai encontrar o arquivo buildozer.spec que você criou
+          buildozer -v android debug
         continue-on-error: false
 
       - name: Upload do APK
