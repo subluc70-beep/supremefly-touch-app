@@ -8,7 +8,7 @@ version = 0.1
 requirements = python3,kivy==2.3.0,certifi
 orientation = portrait
 fullscreen = 0
-android.permissions = INTERNET, SYSTEM_ALERT_WINDOW
+android.permissions = INTERNET, SYSTEM_ALERT_WINDOW, moe.shizuku.manager.permission.API_V23
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
