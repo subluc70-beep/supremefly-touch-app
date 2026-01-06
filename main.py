@@ -17,7 +17,6 @@ class SupremeFlyApp(MDApp):
         screen = MDScreen()
         layout = MDBoxLayout(orientation='vertical', padding=30, spacing=20)
 
-        # Título Neon
         layout.add_widget(MDLabel(
             text="SUPREME FLY PRO",
             halign="center",
@@ -26,8 +25,7 @@ class SupremeFlyApp(MDApp):
             text_color=get_color_from_hex('#39FF14')
         ))
 
-        # Slider Milimétrico (0.1 - 1.0)
-        layout.add_widget(MDLabel(text="AJUSTE DE SENSIBILIDADE (mm)", halign="center"))
+        layout.add_widget(MDLabel(text="SENSIBILIDADE (0.1 - 1.0 mm)", halign="center"))
         self.slider = MDSlider(min=0.1, max=1.0, value=0.5, step=0.1, color=get_color_from_hex('#39FF14'))
         self.label_val = MDLabel(text=f"{self.slider.value:.1f} mm", halign="center", font_style="H5")
         self.slider.bind(value=self.update_val)
@@ -35,7 +33,6 @@ class SupremeFlyApp(MDApp):
         layout.add_widget(self.slider)
         layout.add_widget(self.label_val)
 
-        # Botão Suavizar Toque
         self.btn_suavizar = MDFillRoundFlatButton(
             text="SUAVIZAR TOQUE: OFF",
             pos_hint={"center_x": .5},
@@ -48,19 +45,22 @@ class SupremeFlyApp(MDApp):
         return screen
 
     def on_start(self):
-        # COMANDO MESTRE: Tenta ler o Shizuku para forçar o pop-up de autorização
+        # COMANDO DE CHOQUE: Força o Shizuku a ver o app
+        self.force_shizuku()
+
+    def force_shizuku(self):
         try:
             from jnius import autoclass
-            # Tenta acessar a classe do Shizuku para o Android disparar a permissão
+            # Tenta um comando de sistema via Shell que o Shizuku monitora
+            os.system("sh /sdcard/Android/data/moe.shizuku.manager/files/start.sh")
+            # Tenta forçar o Binder
             autoclass('moe.shizuku.api.ShizukuService')
         except:
-            # Se não encontrar a classe, tenta via comando de shell (plano B)
-            os.system("pm list packages --user 0 | grep shizuku")
+            # Se falhar, o QUERY_ALL_PACKAGES no buildozer fará o resto
+            pass
 
     def update_val(self, instance, value):
         self.label_val.text = f"{value:.1f} mm"
-        # Aqui o comando seria enviado via Shizuku se autorizado
-        # os.system(f"settings put system pointer_speed {int(value*10)}")
 
     def toggle_suavizar(self, instance):
         if "OFF" in instance.text:
