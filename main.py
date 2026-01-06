@@ -16,6 +16,6 @@ def main(page: ft.Page):
         )
     )
     page.update()
-
 if __name__ == "__main__":
-    ft.app(target=main)
+    # Mudamos para o modo que mais funciona em celulares com bloqueio de rede
+    ft.app(target=main, view=ft.AppView.WEB_BROWSER)
