@@ -9,25 +9,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Java
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Instalar Flet
-        run: pip install flet
+      # PASSO CRUCIAL: Instalar dependências necessárias para compilação Android
+      - name: Instalar Dependências
+        run: |
+          pip install flet
+          sudo apt-get update
+          sudo apt-get install -y setproctitle python3-pip
 
       - name: Build do APK
         run: |
-          yes | flet build apk --verbose
+          # O flet build cria a estrutura necessária automaticamente
+          flet build apk --verbose
 
-      - name: Upload
+      - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
