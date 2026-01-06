@@ -1,39 +1,44 @@
 import flet as ft
 
 def main(page: ft.Page):
-    # Configurações para garantir que a UI apareça
-    page.bgcolor = "#050505"
+    # Configurações básicas de visualização
+    page.title = "SUPREME TOUCH"
     page.theme_mode = ft.ThemeMode.DARK
+    page.bgcolor = "#050505"
+    # Centralização total
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+
+    # Elementos da interface
+    icone = ft.Icon(ft.icons.TARGET, size=100, color="#39FF14")
+    texto = ft.Text("SUPREME TOUCH ATIVO", size=24, color="white", weight="bold")
     
-    # Criando os componentes antes de adicionar
-    icone = ft.Icon(ft.icons.TARGET, size=80, color="#39FF14")
-    titulo = ft.Text("SUPREME TOUCH PRO", size=26, weight="bold", color="white")
-    
-    # Botão de teste simples
-    btn_teste = ft.ElevatedButton(
-        "ATIVAR SISTEMA", 
-        width=250, 
+    btn = ft.ElevatedButton(
+        "TESTAR SISTEMA",
+        width=250,
         height=60,
-        style=ft.ButtonStyle(bgcolor="#1A1A1A", color="#39FF14")
+        style=ft.ButtonStyle(
+            bgcolor="#1A1A1A",
+            color="#39FF14",
+            shape=ft.RoundedRectangleBorder(radius=10)
+        )
     )
 
-    # Adicionando tudo dentro de uma coluna centralizada
+    # Organizando na tela
     page.add(
         ft.Column(
             [
                 icone,
-                titulo,
+                texto,
                 ft.Divider(height=20, color="transparent"),
-                btn_teste,
+                btn,
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
     )
     
-    # Força a atualização da página
     page.update()
 
+# O SEGREDO PARA NÃO FICAR TELA PRETA NO ANDROID:
 if __name__ == "__main__":
-    ft.app(target=main)
+    ft.app(target=main, view=ft.AppView.FLET_APP)
