@@ -15,8 +15,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -24,20 +26,17 @@ jobs:
           python-version: '3.11'
 
       - name: Instalar Flet
-        run: |
-          pip install flet
-          sudo apt-get update
-          sudo apt-get install -y setproctitle
+        run: pip install flet
 
       - name: Build do APK
         run: |
-          # Aceita licenças e define o caminho do SDK
-          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          # Aceita licenças e constrói
+          yes | flutter doctor --android-licenses
           flet build apk --verbose
 
-      - name: Upload APK
+      - name: Upload
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: App-Supreme-Touch
+          name: App-Supreme
           path: build/apk/*.apk
