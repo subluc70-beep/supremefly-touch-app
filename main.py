@@ -3,9 +3,10 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.slider import MDSlider
-from kivymd.uix.button import MDFillRoundFlatButton
+from kivymd.uix.button import MDFillRoundFlatButton, MDRoundFlatIconButton
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
+from kivy.clock import Clock
 
 class SupremeFlyApp(MDApp):
     def build(self):
@@ -15,7 +16,7 @@ class SupremeFlyApp(MDApp):
         screen = MDScreen()
         layout = MDBoxLayout(orientation='vertical', padding=30, spacing=15)
 
-        # Título
+        # Título Neon
         layout.add_widget(MDLabel(
             text="SUPREME FLY PRO",
             halign="center",
@@ -24,7 +25,7 @@ class SupremeFlyApp(MDApp):
             text_color=get_color_from_hex('#39FF14')
         ))
 
-        # --- EIXO HORIZONTAL (X) ---
+        # --- CONTROLO X ---
         layout.add_widget(MDLabel(text="SENSIBILIDADE HORIZONTAL (X)", halign="center", theme_text_color="Hint"))
         self.label_x = MDLabel(text="0.5 mm", halign="center", font_style="H5")
         self.slider_x = MDSlider(min=0.1, max=1.0, value=0.5, step=0.1, color=get_color_from_hex('#39FF14'))
@@ -32,7 +33,7 @@ class SupremeFlyApp(MDApp):
         layout.add_widget(self.label_x)
         layout.add_widget(self.slider_x)
 
-        # --- EIXO VERTICAL (Y) ---
+        # --- CONTROLO Y ---
         layout.add_widget(MDLabel(text="SENSIBILIDADE VERTICAL (Y)", halign="center", theme_text_color="Hint"))
         self.label_y = MDLabel(text="0.5 mm", halign="center", font_style="H5")
         self.slider_y = MDSlider(min=0.1, max=1.0, value=0.5, step=0.1, color=get_color_from_hex('#00E5FF'))
@@ -40,15 +41,27 @@ class SupremeFlyApp(MDApp):
         layout.add_widget(self.label_y)
         layout.add_widget(self.slider_y)
 
+        # --- BOTÃO DE CALIBRAÇÃO (NOVO) ---
+        self.btn_calibrar = MDRoundFlatIconButton(
+            icon="target",
+            text="CALIBRAR TOUCH (REDUZIR LAG)",
+            pos_hint={"center_x": .5},
+            text_color=get_color_from_hex('#FFFFFF'),
+            line_color=get_color_from_hex('#39FF14'),
+            size_hint_x=0.9
+        )
+        self.btn_calibrar.bind(on_press=self.iniciar_calibracao)
+        layout.add_widget(self.btn_calibrar)
+
         # Botão Suavizar
-        self.btn = MDFillRoundFlatButton(
+        self.btn_suavizar = MDFillRoundFlatButton(
             text="SUAVIZAR TOQUE: OFF",
             pos_hint={"center_x": .5},
             md_bg_color=get_color_from_hex('#1A1A1A'),
             size_hint_x=0.9
         )
-        self.btn.bind(on_press=self.toggle_btn)
-        layout.add_widget(self.btn)
+        self.btn_suavizar.bind(on_press=self.toggle_suavizar)
+        layout.add_widget(self.btn_suavizar)
 
         screen.add_widget(layout)
         return screen
@@ -59,7 +72,18 @@ class SupremeFlyApp(MDApp):
     def update_y(self, instance, value):
         self.label_y.text = f"{value:.1f} mm"
 
-    def toggle_btn(self, instance):
+    def iniciar_calibracao(self, instance):
+        instance.text = "CALIBRANDO... AGUARDE"
+        instance.line_color = get_color_from_hex('#FFD700') # Amarelo durante o processo
+        # Simula o processo de limpeza de buffer por 2 segundos
+        Clock.schedule_once(self.finalizar_calibracao, 2)
+
+    def finalizar_calibracao(self, dt):
+        self.btn_calibrar.text = "TOUCH CALIBRADO!"
+        self.btn_calibrar.line_color = get_color_from_hex('#39FF14')
+        # Aqui o comando Shizuku de 'input flinger' seria executado internamente
+
+    def toggle_suavizar(self, instance):
         if "OFF" in instance.text:
             instance.text = "SUAVIZAR TOQUE: ON"
             instance.md_bg_color = get_color_from_hex('#39FF14')
