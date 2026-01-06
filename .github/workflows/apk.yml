@@ -5,13 +5,15 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - name: Setup System
+      - name: Instalar Dependencias do Sistema
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential git python3-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libsqlite3-dev sqlite3 bzip2 libbz2-dev liblzma-dev libffi-dev libssl-dev unzip zip libncurses5 libncursesw5 libtinfo5 cmake libtool autoconf automake pkg-config
-      - name: Install Python Deps
+      - name: Configurar Python
         run: |
           pip install --upgrade pip
           pip install "cython<3.0" wheel setuptools buildozer
-      - name: Build with Buildozer
-        run: yes | buildozer -v android debug
+      - name: Build com Limpeza de Cache
+        run: |
+          buildozer android clean
+          yes | buildozer -v android debug
