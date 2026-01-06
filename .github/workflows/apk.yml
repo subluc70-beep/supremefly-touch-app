@@ -15,23 +15,25 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Instalar Flet e Dependencias
+      - name: Instalar Flet
         run: |
           pip install flet
-          # O Flet precisa dessa biblioteca no Linux para compilar
           sudo apt-get update
           sudo apt-get install -y setproctitle
 
       - name: Build do APK
         run: |
-          # O comando 'yes' responde "sim" para todas as licenças do Android automaticamente
-          # Isso evita o erro 100
-          yes | flet build apk --verbose
+          # Aceita licenças e define o caminho do SDK
+          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          flet build apk --verbose
 
       - name: Upload APK
         if: success()
