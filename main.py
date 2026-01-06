@@ -8,62 +8,53 @@ from kivy.utils import get_color_from_hex
 
 class SupremeFlyApp(App):
     def build(self):
-        Window.clearcolor = get_color_from_hex('#0a0a0a')
+        # Cor de fundo escura para poupar RAM e bateria
+        Window.clearcolor = get_color_from_hex('#050505')
         
-        layout = BoxLayout(orientation='vertical', padding=30, spacing=20)
+        layout = BoxLayout(orientation='vertical', padding=40, spacing=25)
         
-        # Título
+        # Título Neon
         layout.add_widget(Label(
             text='SUPREME FLY PRO',
-            font_size='32sp',
+            font_size='35sp',
             bold=True,
             color=get_color_from_hex('#39FF14')
         ))
 
-        # --- Área de Regulagem ---
-        layout.add_widget(Label(text='Regulagem de Sensibilidade (mm)', font_size='14sp'))
+        # --- Ajuste de Sensibilidade ---
+        layout.add_widget(Label(text='Regulação de Sensibilidade', font_size='18sp'))
         
-        self.mm_slider = Slider(min=0, max=100, value=50, step=1)
-        self.mm_label = Label(text=f'{int(self.mm_slider.value)} mm', color=get_color_from_hex('#14ccff'))
+        # Slider de 0 a 100mm
+        self.slider = Slider(min=0, max=100, value=50, step=1)
+        self.val_label = Label(text=f'{int(self.slider.value)} mm', font_size='25sp', color=get_color_from_hex('#14ccff'))
         
-        self.mm_slider.bind(value=self.atualizar_label)
+        self.slider.bind(value=self.atualizar_texto)
         
-        layout.add_widget(self.mm_slider)
-        layout.add_widget(self.mm_label)
+        layout.add_widget(self.slider)
+        layout.add_widget(self.val_label)
 
         # --- Botão Shizuku ---
         self.btn_shizuku = Button(
-            text='PEDIR PERMISSÃO SHIZUKU',
-            size_hint=(1, 0.2),
+            text='VINCULAR AO SHIZUKU',
+            size_hint=(1, 0.3),
             background_normal='',
-            background_color=get_color_from_hex('#222222'),
+            background_color=get_color_from_hex('#1a1a1a'),
             color=(1, 1, 1, 1)
         )
-        self.btn_shizuku.bind(on_press=self.solicitar_shizuku)
+        self.btn_shizuku.bind(on_press=self.conectar_shizuku)
         layout.add_widget(self.btn_shizuku)
 
-        # Botão Ativar
-        self.btn_ativar = Button(
-            text='ATIVAR OTIMIZAÇÃO',
-            size_hint=(1, 0.2),
-            background_normal='',
-            background_color=get_color_from_hex('#39FF14'),
-            color=(0, 0, 0, 1),
-            bold=True
-        )
-        layout.add_widget(self.btn_ativar)
-        
         return layout
 
-    def atualizar_label(self, instance, value):
-        self.mm_label.text = f'{int(value)} mm'
+    def atualizar_texto(self, instance, value):
+        self.val_label.text = f'{int(value)} mm'
 
-    def solicitar_shizuku(self, instance):
-        # Aqui o app tenta "cutucar" o Shizuku
-        # No Android, isso dispara a janela de permissão
-        self.btn_shizuku.text = "AGUARDANDO SHIZUKU..."
+    def conectar_shizuku(self, instance):
+        # Este comando tenta comunicar com o serviço Shizuku
+        self.btn_shizuku.text = "A SOLICITAR ACESSO..."
         self.btn_shizuku.background_color = get_color_from_hex('#ffaa00')
-        print("Solicitando acesso ao Shizuku via Binder...")
+        # Log interno para o sistema detectar a tentativa de ligação
+        print("Tentando conexão com moe.shizuku.manager.permission.API_V23")
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
