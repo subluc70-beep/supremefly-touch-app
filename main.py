@@ -1,80 +1,83 @@
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.uix.slider import Slider
+from kivymd.app import MDApp
+from kivymd.uix.screen import MDScreen
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.label import MDLabel
+from kivymd.uix.slider import MDSlider
+from kivymd.uix.button import MDRaisedButton, MDFillRoundFlatButton
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
-import os
+from jnius import autoclass
 
-class SupremeFlyApp(App):
+class SupremeFlyApp(MDApp):
     def build(self):
-        # Fundo Preto Puro
-        Window.clearcolor = get_color_from_hex('#000000')
-        layout = BoxLayout(orientation='vertical', padding=40, spacing=25)
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Green"
+        Window.clearcolor = get_color_from_hex('#050505')
+        
+        screen = MDScreen()
+        layout = MDBoxLayout(orientation='vertical', padding=30, spacing=20)
 
-        # Cabeçalho
-        layout.add_widget(Label(
-            text='SUPREME FLY PRO',
-            font_size='34sp',
-            bold=True,
-            color=get_color_from_hex('#39FF14') # Verde Neon
+        # Título Neon
+        layout.add_widget(MDLabel(
+            text="SUPREME FLY PRO",
+            halign="center",
+            font_style="H4",
+            theme_text_color="Custom",
+            text_color=get_color_from_hex('#39FF14')
         ))
 
-        # Indicador de Valor Atual
-        layout.add_widget(Label(text='SENSIBILIDADE ATUAL', font_size='14sp', color=(1,1,1,0.5)))
-        
-        # Barra de 0.1 a 1.0
-        self.slider = Slider(min=0.1, max=1.0, value=0.5, step=0.1)
-        self.val_label = Label(text=f'{self.slider.value:.1f} mm', font_size='45sp', bold=True, color=get_color_from_hex('#00E5FF'))
-        self.slider.bind(value=self.atualizar_contagem)
+        # Slider Milimétrico (0.1 - 1.0)
+        layout.add_widget(MDLabel(text="SENSIBILIDADE (mm)", halign="center"))
+        self.slider = MDSlider(min=0.1, max=1.0, value=0.5, step=0.1, color=get_color_from_hex('#39FF14'))
+        self.label_val = MDLabel(text=f"{self.slider.value:.1f} mm", halign="center", font_style="H5")
+        self.slider.bind(value=self.update_val)
         
         layout.add_widget(self.slider)
-        layout.add_widget(self.val_label)
+        layout.add_widget(self.label_val)
 
-        # Botão Suavizar Toque (O Toque Reto)
-        self.btn_suavizar = Button(
-            text='SUAVIZAR TOQUE: OFF',
-            size_hint=(1, 0.2),
-            background_normal='',
-            background_color=get_color_from_hex('#151515'),
-            color=(1, 1, 1, 1)
+        # Botão Suavizar Toque (Toque Reto)
+        self.btn_suavizar = MDFillRoundFlatButton(
+            text="SUAVIZAR TOQUE: OFF",
+            pos_hint={"center_x": .5},
+            md_bg_color=get_color_from_hex('#1A1A1A')
         )
         self.btn_suavizar.bind(on_press=self.toggle_suavizar)
         layout.add_widget(self.btn_suavizar)
 
-        # Botão Shizuku (Chamada de Sistema)
-        self.btn_shizuku = Button(
-            text='VINCULAR AO SHIZUKU',
-            size_hint=(1, 0.2),
-            background_normal='',
-            background_color=get_color_from_hex('#39FF14'),
-            color=(0, 0, 0, 1),
-            bold=True
-        )
-        self.btn_shizuku.bind(on_press=self.chamar_shizuku)
-        layout.add_widget(self.btn_shizuku)
+        screen.add_widget(layout)
+        return screen
 
-        return layout
+    def on_start(self):
+        # Tenta conectar ao Shizuku AUTOMATICAMENTE ao abrir o app
+        self.check_shizuku_permission()
 
-    def atualizar_contagem(self, instance, value):
-        self.val_label.text = f'{value:.1f} mm'
+    def update_val(self, instance, value):
+        self.label_val.text = f"{value:.1f} mm"
 
     def toggle_suavizar(self, instance):
-        if instance.text == 'SUAVIZAR TOQUE: OFF':
-            instance.text = 'SUAVIZAR TOQUE: ON'
-            instance.background_color = get_color_from_hex('#00E5FF')
-            instance.color = (0, 0, 0, 1)
+        if "OFF" in instance.text:
+            instance.text = "SUAVIZAR TOQUE: ON"
+            instance.md_bg_color = get_color_from_hex('#00E5FF')
         else:
-            instance.text = 'SUAVIZAR TOQUE: OFF'
-            instance.background_color = get_color_from_hex('#151515')
-            instance.color = (1, 1, 1, 1)
+            instance.text = "SUAVIZAR TOQUE: OFF"
+            instance.md_bg_color = get_color_from_hex('#1A1A1A')
 
-    def chamar_shizuku(self, instance):
-        instance.text = "SOLICITANDO..."
-        # Comando para forçar o serviço do Shizuku a reconhecer o App
-        os.system("pm list packages --user 0") 
-        os.system("sh /sdcard/Android/data/moe.shizuku.manager/files/start.sh")
+    def check_shizuku_permission(self):
+        # Código para disparar a permissão oficial do Shizuku
+        try:
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
+            currentActivity = PythonActivity.mActivity
+            PackageManager = autoclass('android.content.pm.PackageManager')
+            
+            # Tenta verificar se o Shizuku permite o acesso
+            # Isso dispara a janela oficial "Allow SupremeFly to access Shizuku?"
+            permission = "moe.shizuku.manager.permission.API_V23"
+            check = currentActivity.checkSelfPermission(permission)
+            
+            if check != PackageManager.PERMISSION_GRANTED:
+                currentActivity.requestPermissions([permission], 1)
+        except Exception as e:
+            print(f"Shizuku Error: {e}")
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
