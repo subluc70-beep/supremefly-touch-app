@@ -25,9 +25,17 @@ requirements = python3,kivy==2.3.0,kivymd==1.2.0,pyjnius,cython==0.29.33,sdl2_im
 orientation = portrait
 
 # (list) Permissions
-# Estas são as permissões que permitem o app encontrar e usar o Shizuku
+# Estas são as permissões que permitem o app encontrar e usar o Shizukuandroid.permissions = INTERNET, SYSTEM_ALERT_WINDOW, moe.shizuku.manager.permission.API_V23, QUERY_ALL_PACKAGES
+# PERMISSÕES PARA O SHIZUKU SER RECONHECIDO
 android.permissions = INTERNET, SYSTEM_ALERT_WINDOW, moe.shizuku.manager.permission.API_V23, QUERY_ALL_PACKAGES
 
+# ESSA LINHA É A CHAVE: Ela avisa ao Android que seu app quer falar com o Shizuku
+android.manifest.queries = moe.shizuku.privilege.api
+
+# Garanta que a API esteja na 33 para compatibilidade total
+android.api = 33
+android.minapi = 21
+android.ndk = 25c
 # (int) Target Android API, should be as high as possible.
 android.api = 33
 
