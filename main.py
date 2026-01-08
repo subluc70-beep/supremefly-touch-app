@@ -7,17 +7,31 @@ from kivymd.uix.button import MDFillRoundFlatButton, MDRoundFlatIconButton
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
+from kivy.uix.behaviors import DragBehavior
+from kivy.uix.behaviors import ButtonBehavior
+
+# Classe para criar o FPS que pode ser arrastado
+class DraggableFPS(DragBehavior, MDLabel):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.drag_timeout = 10000000
+        self.drag_distance = 0
+        self.drag_rectangle = [self.x, self.y, self.width, self.height]
+
+    def on_pos(self, *args):
+        self.drag_rectangle = [self.x, self.y, self.width, self.height]
 
 class SupremeFlyApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Green"
         Window.clearcolor = get_color_from_hex('#0A0A0A')
         
-        screen = MDScreen()
+        self.screen = MDScreen()
+        
+        # Layout Principal (Fundo)
         layout = MDBoxLayout(orientation='vertical', padding=30, spacing=15)
 
-        # Título Neon
+        # Título
         layout.add_widget(MDLabel(
             text="SUPREME FLY PRO",
             halign="center",
@@ -45,7 +59,7 @@ class SupremeFlyApp(MDApp):
         # --- BOTÃO DE CALIBRAÇÃO ---
         self.btn_calibrar = MDRoundFlatIconButton(
             icon="target",
-            text="CALIBRAR TOUCH (REDUZIR LAG)",
+            text="CALIBRAR TOUCH",
             pos_hint={"center_x": .5},
             text_color=get_color_from_hex('#FFFFFF'),
             line_color=get_color_from_hex('#39FF14'),
@@ -54,18 +68,27 @@ class SupremeFlyApp(MDApp):
         self.btn_calibrar.bind(on_press=self.iniciar_calibracao)
         layout.add_widget(self.btn_calibrar)
 
-        # Botão Suavizar
-        self.btn_suavizar = MDFillRoundFlatButton(
-            text="SUAVIZAR TOQUE: OFF",
-            pos_hint={"center_x": .5},
-            md_bg_color=get_color_from_hex('#1A1A1A'),
-            size_hint_x=0.9
+        # --- CONTADOR DE FPS ARRASTÁVEL ---
+        self.fps_widget = DraggableFPS(
+            text="FPS: 60",
+            size_hint=(None, None),
+            size=(100, 50),
+            pos=(50, 50), # Posição inicial
+            md_bg_color=(0, 0, 0, 0.5), # Fundo pretinho transparente
+            theme_text_color="Custom",
+            text_color=get_color_from_hex('#39FF14'),
+            halign="center"
         )
-        self.btn_suavizar.bind(on_press=self.toggle_suavizar)
-        layout.add_widget(self.btn_suavizar)
+        
+        self.screen.add_widget(layout)
+        self.screen.add_widget(self.fps_widget) # Adiciona por cima do layout
+        
+        Clock.schedule_interval(self.update_fps, 1/30)
+        
+        return self.screen
 
-        screen.add_widget(layout)
-        return screen
+    def update_fps(self, dt):
+        self.fps_widget.text = f"FPS: {int(Clock.get_fps())}"
 
     def update_x(self, instance, value):
         self.label_x.text = f"{value:.1f} mm"
@@ -74,21 +97,11 @@ class SupremeFlyApp(MDApp):
         self.label_y.text = f"{value:.1f} mm"
 
     def iniciar_calibracao(self, instance):
-        instance.text = "CALIBRANDO... AGUARDE"
-        instance.line_color = get_color_from_hex('#FFD700')
+        instance.text = "CALIBRANDO..."
         Clock.schedule_once(self.finalizar_calibracao, 2)
 
     def finalizar_calibracao(self, dt):
-        self.btn_calibrar.text = "TOUCH CALIBRADO!"
-        self.btn_calibrar.line_color = get_color_from_hex('#39FF14')
-
-    def toggle_suavizar(self, instance):
-        if "OFF" in instance.text:
-            instance.text = "SUAVIZAR TOQUE: ON"
-            instance.md_bg_color = get_color_from_hex('#39FF14')
-        else:
-            instance.text = "SUAVIZAR TOQUE: OFF"
-            instance.md_bg_color = get_color_from_hex('#1A1A1A')
+        self.btn_calibrar.text = "CALIBRADO!"
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
