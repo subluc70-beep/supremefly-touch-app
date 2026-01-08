@@ -11,6 +11,7 @@ from kivy.clock import Clock
 class SupremeFlyApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Green"
         Window.clearcolor = get_color_from_hex('#0A0A0A')
         
         screen = MDScreen()
@@ -25,7 +26,7 @@ class SupremeFlyApp(MDApp):
             text_color=get_color_from_hex('#39FF14')
         ))
 
-        # --- CONTROLO X ---
+        # --- EIXO X ---
         layout.add_widget(MDLabel(text="SENSIBILIDADE HORIZONTAL (X)", halign="center", theme_text_color="Hint"))
         self.label_x = MDLabel(text="0.5 mm", halign="center", font_style="H5")
         self.slider_x = MDSlider(min=0.1, max=1.0, value=0.5, step=0.1, color=get_color_from_hex('#39FF14'))
@@ -33,7 +34,7 @@ class SupremeFlyApp(MDApp):
         layout.add_widget(self.label_x)
         layout.add_widget(self.slider_x)
 
-        # --- CONTROLO Y ---
+        # --- EIXO Y ---
         layout.add_widget(MDLabel(text="SENSIBILIDADE VERTICAL (Y)", halign="center", theme_text_color="Hint"))
         self.label_y = MDLabel(text="0.5 mm", halign="center", font_style="H5")
         self.slider_y = MDSlider(min=0.1, max=1.0, value=0.5, step=0.1, color=get_color_from_hex('#00E5FF'))
@@ -41,7 +42,7 @@ class SupremeFlyApp(MDApp):
         layout.add_widget(self.label_y)
         layout.add_widget(self.slider_y)
 
-        # --- BOTÃO DE CALIBRAÇÃO (NOVO) ---
+        # --- BOTÃO DE CALIBRAÇÃO ---
         self.btn_calibrar = MDRoundFlatIconButton(
             icon="target",
             text="CALIBRAR TOUCH (REDUZIR LAG)",
@@ -74,14 +75,12 @@ class SupremeFlyApp(MDApp):
 
     def iniciar_calibracao(self, instance):
         instance.text = "CALIBRANDO... AGUARDE"
-        instance.line_color = get_color_from_hex('#FFD700') # Amarelo durante o processo
-        # Simula o processo de limpeza de buffer por 2 segundos
+        instance.line_color = get_color_from_hex('#FFD700')
         Clock.schedule_once(self.finalizar_calibracao, 2)
 
     def finalizar_calibracao(self, dt):
         self.btn_calibrar.text = "TOUCH CALIBRADO!"
         self.btn_calibrar.line_color = get_color_from_hex('#39FF14')
-        # Aqui o comando Shizuku de 'input flinger' seria executado internamente
 
     def toggle_suavizar(self, instance):
         if "OFF" in instance.text:
