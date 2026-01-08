@@ -1,7 +1,10 @@
 import os
 from kivy.config import Config
-# Desativa o multitouch para evitar bugs de toque
+
+# Ajustes de estabilidade para evitar fechamento em Androids específicos
+os.environ['KIVY_GL_BACKEND'] = 'sdl2'
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+Config.set('graphics', 'multisamples', '0')
 
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
@@ -12,18 +15,6 @@ from kivymd.uix.button import MDRoundFlatIconButton
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
-from kivy.uix.behaviors import DragBehavior  # ESSENCIAL: Faltava esse import!
-
-# Classe para o FPS Arrastável
-class DraggableFPS(DragBehavior, MDLabel):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.drag_timeout = 10000000
-        self.drag_distance = 0
-        self.drag_rectangle = [self.x, self.y, self.width, self.height]
-
-    def on_pos(self, *args):
-        self.drag_rectangle = [self.x, self.y, self.width, self.height]
 
 class SupremeFlyApp(MDApp):
     def build(self):
@@ -32,9 +23,9 @@ class SupremeFlyApp(MDApp):
         Window.clearcolor = get_color_from_hex('#0A0A0A')
         
         self.screen = MDScreen()
-        layout = MDBoxLayout(orientation='vertical', padding=30, spacing=15)
+        layout = MDBoxLayout(orientation='vertical', padding=30, spacing=20)
 
-        # Título
+        # Título Neon
         layout.add_widget(MDLabel(
             text="SUPREME FLY PRO",
             halign="center",
@@ -59,10 +50,10 @@ class SupremeFlyApp(MDApp):
         layout.add_widget(self.label_y)
         layout.add_widget(self.slider_y)
 
-        # --- BOTÃO DE CALIBRAÇÃO ---
+        # --- BOTÃO DE CALIBRAÇÃO (SHIZUKU INTERFACE) ---
         self.btn_calibrar = MDRoundFlatIconButton(
             icon="target",
-            text="CALIBRAR TOUCH",
+            text="CALIBRAR COM SHIZUKU",
             pos_hint={"center_x": .5},
             text_color=get_color_from_hex('#FFFFFF'),
             line_color=get_color_from_hex('#39FF14'),
@@ -71,28 +62,8 @@ class SupremeFlyApp(MDApp):
         self.btn_calibrar.bind(on_press=self.iniciar_calibracao)
         layout.add_widget(self.btn_calibrar)
 
-        # --- FPS ARRASTÁVEL ---
-        self.fps_widget = DraggableFPS(
-            text="FPS: 60",
-            size_hint=(None, None),
-            size=(120, 60),
-            pos=(100, 100),
-            md_bg_color=(0, 0, 0, 0.6),
-            theme_text_color="Custom",
-            text_color=get_color_from_hex('#39FF14'),
-            halign="center"
-        )
-        
         self.screen.add_widget(layout)
-        self.screen.add_widget(self.fps_widget)
-        
-        # Inicia o FPS com um pequeno atraso para evitar crash na abertura
-        Clock.schedule_once(lambda dt: Clock.schedule_interval(self.update_fps, 1/30), 1)
-        
         return self.screen
-
-    def update_fps(self, dt):
-        self.fps_widget.text = f"FPS: {int(Clock.get_fps())}"
 
     def update_x(self, instance, value):
         self.label_x.text = f"{value:.1f} mm"
@@ -101,12 +72,12 @@ class SupremeFlyApp(MDApp):
         self.label_y.text = f"{value:.1f} mm"
 
     def iniciar_calibracao(self, instance):
-        instance.text = "VERIFICANDO SHIZUKU..."
-        # Aqui simulamos a chamada ao sistema
-        Clock.schedule_once(self.finalizar_calibracao, 3)
+        instance.text = "CALIBRANDO VIA SHIZUKU..."
+        # Simula a resposta do sistema
+        Clock.schedule_once(self.finalizar_calibracao, 2.5)
 
     def finalizar_calibracao(self, dt):
-        self.btn_calibrar.text = "OTIMIZADO COM SUCESSO!"
+        self.btn_calibrar.text = "CALIBRADO E OTIMIZADO!"
         self.btn_calibrar.icon = "check-decagram"
 
 if __name__ == '__main__':
