@@ -1,14 +1,10 @@
+import os
+from kivy.config import Config
+# Desativa o multitouch que às vezes causa crash em alguns celulares
+Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+
 from kivymd.app import MDApp
-from kivymd.uix.screen import MDScreen
-from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.label import MDLabel
-from kivymd.uix.slider import MDSlider
-from kivymd.uix.button import MDFillRoundFlatButton, MDRoundFlatIconButton
-from kivy.core.window import Window
-from kivy.utils import get_color_from_hex
-from kivy.clock import Clock
-from kivy.uix.behaviors import DragBehavior
-from kivy.uix.behaviors import ButtonBehavior
+# ... resto dos imports
 
 # Classe para criar o FPS que pode ser arrastado
 class DraggableFPS(DragBehavior, MDLabel):
