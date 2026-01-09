@@ -1,9 +1,8 @@
 import os
 from kivy.config import Config
 
-# Ajustes de estabilidade para evitar fechamento em Androids específicos
+# Estabilidade para não fechar no Android
 os.environ['KIVY_GL_BACKEND'] = 'sdl2'
-Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 Config.set('graphics', 'multisamples', '0')
 
 from kivymd.app import MDApp
@@ -11,8 +10,7 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.slider import MDSlider
-from kivymd.uix.button import MDRoundFlatIconButton
-from kivy.core.window import Window
+from kivymd.uix.button import MDFillRoundFlatIconButton
 from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
 
@@ -20,65 +18,75 @@ class SupremeFlyApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Green"
-        Window.clearcolor = get_color_from_hex('#0A0A0A')
         
         self.screen = MDScreen()
-        layout = MDBoxLayout(orientation='vertical', padding=30, spacing=20)
+        # Layout com fundo bem escuro para destacar o Neon
+        layout = MDBoxLayout(orientation='vertical', padding=40, spacing=20)
 
-        # Título Neon
+        # Título Neon IMPACTANTE
         layout.add_widget(MDLabel(
             text="SUPREME FLY PRO",
             halign="center",
             font_style="H4",
             theme_text_color="Custom",
-            text_color=get_color_from_hex('#39FF14')
+            text_color=get_color_from_hex('#39FF14'),
+            bold=True
         ))
 
-        # --- EIXO X ---
-        layout.add_widget(MDLabel(text="SENSIBILIDADE HORIZONTAL (X)", halign="center", theme_text_color="Hint"))
-        self.label_x = MDLabel(text="0.5 mm", halign="center", font_style="H5")
-        self.slider_x = MDSlider(min=0.1, max=1.0, value=0.5, step=0.1, color=get_color_from_hex('#39FF14'))
-        self.slider_x.bind(value=self.update_x)
+        layout.add_widget(MDLabel(
+            text="SENSIBILIDADE ULTRA (LIMITE 1000)",
+            halign="center",
+            theme_text_color="Hint",
+            font_style="Caption"
+        ))
+
+        # --- SLIDER EIXO X (Limite 1000) ---
+        self.label_x = MDLabel(text="Eixo X: 500", halign="center", theme_text_color="Primary", font_style="H6")
+        self.slider_x = MDSlider(min=1, max=1000, value=500, step=1, color_active=get_color_from_hex('#39FF14'))
+        self.slider_x.bind(value=self.update_labels)
         layout.add_widget(self.label_x)
         layout.add_widget(self.slider_x)
 
-        # --- EIXO Y ---
-        layout.add_widget(MDLabel(text="SENSIBILIDADE VERTICAL (Y)", halign="center", theme_text_color="Hint"))
-        self.label_y = MDLabel(text="0.5 mm", halign="center", font_style="H5")
-        self.slider_y = MDSlider(min=0.1, max=1.0, value=0.5, step=0.1, color=get_color_from_hex('#00E5FF'))
-        self.slider_y.bind(value=self.update_y)
+        # --- SLIDER EIXO Y (Limite 1000) ---
+        self.label_y = MDLabel(text="Eixo Y: 500", halign="center", theme_text_color="Primary", font_style="H6")
+        self.slider_y = MDSlider(min=1, max=1000, value=500, step=1, color_active=get_color_from_hex('#00E5FF'))
+        self.slider_y.bind(value=self.update_labels)
         layout.add_widget(self.label_y)
         layout.add_widget(self.slider_y)
 
-        # --- BOTÃO DE CALIBRAÇÃO (SHIZUKU INTERFACE) ---
-        self.btn_calibrar = MDRoundFlatIconButton(
-            icon="target",
-            text="CALIBRAR COM SHIZUKU",
+        # Botão de Ativação Shizuku
+        self.btn = MDFillRoundFlatIconButton(
+            icon="shield-check",
+            text="CONECTAR AO SHIZUKU",
             pos_hint={"center_x": .5},
-            text_color=get_color_from_hex('#FFFFFF'),
-            line_color=get_color_from_hex('#39FF14'),
-            size_hint_x=0.9
+            size_hint_x=0.9,
+            md_bg_color=get_color_from_hex('#1A1A1A'),
+            text_color=get_color_from_hex('#39FF14')
         )
-        self.btn_calibrar.bind(on_press=self.iniciar_calibracao)
-        layout.add_widget(self.btn_calibrar)
+        self.btn.bind(on_release=self.ativar_shizuku)
+        layout.add_widget(self.btn)
 
         self.screen.add_widget(layout)
         return self.screen
 
-    def update_x(self, instance, value):
-        self.label_x.text = f"{value:.1f} mm"
+    def update_labels(self, *args):
+        # Atualiza os números conforme o usuário arrasta
+        self.label_x.text = f"Eixo X: {int(self.slider_x.value)}"
+        self.label_y.text = f"Eixo Y: {int(self.slider_y.value)}"
 
-    def update_y(self, instance, value):
-        self.label_y.text = f"{value:.1f} mm"
-
-    def iniciar_calibracao(self, instance):
-        instance.text = "CALIBRANDO VIA SHIZUKU..."
-        # Simula a resposta do sistema
-        Clock.schedule_once(self.finalizar_calibracao, 2.5)
-
-    def finalizar_calibracao(self, dt):
-        self.btn_calibrar.text = "CALIBRADO E OTIMIZADO!"
-        self.btn_calibrar.icon = "check-decagram"
+    def ativar_shizuku(self, *args):
+        # Esse bloco tenta chamar o Shizuku sem travar o app
+        try:
+            from jnius import autoclass
+            Shizuku = autoclass('moe.shizuku.api.ShizukuService')
+            if Shizuku.pingBinder():
+                self.btn.text = "SHIZUKU CONECTADO ✅"
+                self.btn.md_bg_color = get_color_from_hex('#39FF14')
+                self.btn.text_color = [0,0,0,1]
+        except Exception as e:
+            # Se der erro (porque não tem Shizuku ou biblioteca), ele avisa
+            self.btn.text = "SHIZUKU NÃO DETECTADO"
+            self.btn.md_bg_color = [0.8, 0, 0, 1]
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
