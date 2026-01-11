@@ -1,7 +1,7 @@
 import os
 from kivy.config import Config
 
-# Força o uso do motor gráfico SDL2 (evita fechar em celulares novos)
+# Travas de estabilidade para evitar Crash no Splash
 os.environ['KIVY_GL_BACKEND'] = 'sdl2'
 Config.set('graphics', 'multisamples', '0')
 
@@ -11,6 +11,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.slider import MDSlider
 from kivymd.uix.button import MDFillRoundFlatIconButton
+from kivymd.uix.card import MDCard
 from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
 
@@ -20,62 +21,75 @@ class SupremeFlyApp(MDApp):
         self.theme_cls.primary_palette = "Green"
         
         self.screen = MDScreen()
-        layout = MDBoxLayout(orientation='vertical', padding=40, spacing=25)
+        
+        # Layout principal com scroll-feel
+        main_layout = MDBoxLayout(orientation='vertical', padding=25, spacing=20)
 
-        # Título Neon
-        layout.add_widget(MDLabel(
+        # Cabeçalho PRO
+        main_layout.add_widget(MDLabel(
             text="SUPREME FLY PRO",
             halign="center",
             font_style="H4",
             theme_text_color="Custom",
             text_color=get_color_from_hex('#39FF14'),
-            bold=True
+            bold=True,
+            size_hint_y=None,
+            height="60dp"
         ))
 
-        # --- EIXO X (1 a 1000) ---
-        self.label_x = MDLabel(text="SENSIBILIDADE X: 500", halign="center")
-        self.slider_x = MDSlider(min=1, max=1000, value=500, color_active=get_color_from_hex('#39FF14'))
-        self.slider_x.bind(value=self.update_val)
-        
-        # --- EIXO Y (1 a 1000) ---
-        self.label_y = MDLabel(text="SENSIBILIDADE Y: 500", halign="center")
-        self.slider_y = MDSlider(min=1, max=1000, value=500, color_active=get_color_from_hex('#00E5FF'))
-        self.slider_y.bind(value=self.update_val)
+        # --- CARD DO EIXO X ---
+        card_x = MDCard(orientation='vertical', padding=15, spacing=10, size_hint_y=None, height="120dp", md_bg_color=get_color_from_hex('#151515'), radius=[15,])
+        self.label_x = MDLabel(text="SUAVIZAÇÃO EIXO X: 500", theme_text_color="Primary", font_style="Button", halign="left")
+        self.slider_x = MDSlider(min=1, max=1000, value=500, color_active=get_color_from_hex('#39FF14'), thumb_color_active=get_color_from_hex('#39FF14'))
+        self.slider_x.bind(value=self.update_labels)
+        card_x.add_widget(self.label_x)
+        card_x.add_widget(self.slider_x)
+        main_layout.add_widget(card_x)
 
-        layout.add_widget(self.label_x)
-        layout.add_widget(self.slider_x)
-        layout.add_widget(self.label_y)
-        layout.add_widget(self.slider_y)
+        # --- CARD DO EIXO Y ---
+        card_y = MDCard(orientation='vertical', padding=15, spacing=10, size_hint_y=None, height="120dp", md_bg_color=get_color_from_hex('#151515'), radius=[15,])
+        self.label_y = MDLabel(text="SUAVIZAÇÃO EIXO Y: 500", theme_text_color="Primary", font_style="Button", halign="left")
+        self.slider_y = MDSlider(min=1, max=1000, value=500, color_active=get_color_from_hex('#00E5FF'), thumb_color_active=get_color_from_hex('#00E5FF'))
+        self.slider_y.bind(value=self.update_labels)
+        card_y.add_widget(self.label_y)
+        card_y.add_widget(self.slider_y)
+        main_layout.add_widget(card_y)
 
-        # Botão de Ativação
+        # --- BOTÃO SHIZUKU (O que faz o app ser reconhecido) ---
         self.btn = MDFillRoundFlatIconButton(
             icon="shield-check",
-            text="CONECTAR AO SHIZUKU",
+            text="CONECTAR AO MOTOR SHIZUKU",
             pos_hint={"center_x": .5},
-            size_hint_x=0.9
+            size_hint_x=1,
+            height="60dp",
+            md_bg_color=get_color_from_hex('#1A1A1A'),
+            text_color=get_color_from_hex('#39FF14')
         )
-        self.btn.bind(on_release=self.conectar_shizuku)
-        layout.add_widget(self.btn)
+        self.btn.bind(on_release=self.check_shizuku_connection)
+        main_layout.add_widget(self.btn)
 
-        self.screen.add_widget(layout)
+        # Label de rodapé
+        main_layout.add_widget(MDLabel(text="STATUS: AGUARDANDO PERMISSÃO", halign="center", font_style="Caption", theme_text_color="Hint"))
+
+        self.screen.add_widget(main_layout)
         return self.screen
 
-    def update_val(self, *args):
-        self.label_x.text = f"SENSIBILIDADE X: {int(self.slider_x.value)}"
-        self.label_y.text = f"SENSIBILIDADE Y: {int(self.slider_y.value)}"
+    def update_labels(self, *args):
+        self.label_x.text = f"SUAVIZAÇÃO EIXO X: {int(self.slider_x.value)}"
+        self.label_y.text = f"SUAVIZAÇÃO EIXO Y: {int(self.slider_y.value)}"
 
-    def conectar_shizuku(self, *args):
-        # O truque está aqui: só importa a jnius quando clica, 
-        # para o app não dar erro se ela não carregar rápido
+    def check_shizuku_connection(self, *args):
         try:
             from jnius import autoclass
+            # Esta é a chamada que o Shizuku espera para 'acordar'
             Shizuku = autoclass('moe.shizuku.api.ShizukuService')
             if Shizuku.pingBinder():
-                self.btn.text = "SHIZUKU ATIVO ✅"
+                self.btn.text = "SHIZUKU CONECTADO ✅"
                 self.btn.md_bg_color = get_color_from_hex('#39FF14')
+                self.btn.text_color = [0,0,0,1]
         except:
-            self.btn.text = "ABRA O APP SHIZUKU"
-            self.btn.md_bg_color = [1, 0, 0, 1]
+            self.btn.text = "ERRO: SHIZUKU NÃO DETECTADO"
+            self.btn.md_bg_color = [0.8, 0, 0, 1]
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
