@@ -9,27 +9,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configurar Java 17
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Instalar Dependências
+      - name: Install Dependencies
         run: |
           sudo apt update
           sudo apt install -y build-essential git ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libsqlite3-dev sqlite3 bzip2 libbz2-dev libffi-dev libssl-dev
           pip install --upgrade pip
-          pip install Cython==0.29.33 virtualenv buildozer
+          pip install "Cython<3.0" virtualenv buildozer
 
-      - name: Gerar APK
+      - name: Build APK
         run: |
-          # Limpa erros de patches antigos antes de compilar
-          buildozer android clean
           buildozer android debug
         
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SupremeFly-PRO-FINAL
+          name: SupremeFly-PRO
           path: bin/*.apk
