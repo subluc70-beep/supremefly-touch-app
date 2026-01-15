@@ -1,34 +1,25 @@
-name: Build_Final
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-
+name: BuildAPK
+on: [push, workflow_dispatch]
 jobs:
-  build_job:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y build-essential git ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libsqlite3-dev sqlite3 bzip2 libbz2-dev libffi-dev libssl-dev
           pip install --upgrade pip
           pip install "Cython<3.0" virtualenv buildozer
-
-      - name: Build with Buildozer
+      - name: Build
         run: buildozer android debug
-        
-      - name: Upload APK
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: SupremeFly-Package
+          name: SupremeFly-APK
           path: bin/*.apk
