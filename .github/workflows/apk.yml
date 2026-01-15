@@ -3,7 +3,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   android:
-    runs-on: ubuntu-22.04  # Versão mais estável para compilação Android
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -23,13 +23,10 @@ jobs:
       - name: Build APK
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          # Limpa builds antigos que falharam para evitar cache corrompido
-          buildozer android clean
-          # Roda o build aceitando as licenças automaticamente
           buildozer android debug
         
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SupremeFly-PRO-Package
+          name: SupremeFly-Package
           path: bin/*.apk
