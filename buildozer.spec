@@ -4,7 +4,7 @@ package.name = supremefly
 package.domain = com.supreme.touch
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
-version = 2.9
+version = 3.0
 orientation = portrait
 
 requirements = python3,kivy==2.3.0,kivymd==1.2.0,pillow,pyjnius
