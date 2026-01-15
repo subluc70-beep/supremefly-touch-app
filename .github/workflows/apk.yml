@@ -2,34 +2,33 @@ name: Build SupremeFly PRO
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Isso adiciona um botão para você iniciar manualmente se quiser
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Usa a máquina mais nova e disponível
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configurar Java 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Instalar Dependências do Sistema
+      - name: Install System Dependencies
         run: |
           sudo apt update
           sudo apt install -y build-essential git ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libsqlite3-dev sqlite3 bzip2 libbz2-dev libffi-dev libssl-dev
           pip install --upgrade pip
           pip install "Cython<3.0" virtualenv buildozer
 
-      - name: Gerar APK (Buildozer)
+      - name: Build with Buildozer
         run: |
-          # O comando abaixo ignora erros de cache e força o build
           buildozer android debug
         
-      - name: Upload do APK
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SupremeFly-PRO-APK
+          name: SupremeFly-PRO-Package
           path: bin/*.apk
