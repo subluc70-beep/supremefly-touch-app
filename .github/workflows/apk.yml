@@ -1,25 +1,36 @@
-name: BuildAPK
+name: Build_SupremeFly_PRO
 on: [push, workflow_dispatch]
+
 jobs:
-  build:
+  android:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 17
+
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Install dependencies
+
+      - name: Install Dependencies
         run: |
           sudo apt update
           sudo apt install -y build-essential git ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libsqlite3-dev sqlite3 bzip2 libbz2-dev libffi-dev libssl-dev
           pip install --upgrade pip
-          pip install "Cython<3.0" virtualenv buildozer
-      - name: Build
-        run: buildozer android debug
-      - name: Upload
+          # Instalando Buildozer e Cython de forma global para o runner
+          pip install "Cython<3.0" virtualenv
+          pip install buildozer
+
+      - name: Build APK
+        run: |
+          # Comando para garantir que o Buildozer seja encontrado no PATH
+          export PATH=$PATH:$HOME/.local/bin
+          # Aceita as licenças automaticamente e inicia o build
+          yes | buildozer android debug
+        
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SupremeFly-APK
+          name: SupremeFly-Final
           path: bin/*.apk
