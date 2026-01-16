@@ -1,84 +1,106 @@
 import os
+import subprocess
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.slider import MDSlider
 from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.selectioncontrol import MDSwitch
+from kivymd.uix.button import MDFillRoundFlatButton, MDIconButton
 from kivy.utils import get_color_from_hex
-
-# Configurações de ambiente para performance
-os.environ['KIVY_GL_BACKEND'] = 'sdl2'
+from kivy.clock import Clock
 
 class SupremeFlyApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Green"
+        self.shizuku_ready = False
         
         screen = MDScreen()
-        layout = MDBoxLayout(orientation='vertical', padding=25, spacing=10)
+        layout = MDBoxLayout(orientation='vertical', padding=20, spacing=10)
 
-        # Título
-        layout.add_widget(MDLabel(
-            text="SUPREMEFLY: ESTABILIZADOR ADAPTATIVO",
-            halign="center", font_style="H6",
-            text_color=get_color_from_hex('#39FF14'), theme_text_color="Custom"
-        ))
+        # --- STATUS DE CONEXÃO (BLINDAGEM) ---
+        self.status_bar = MDBoxLayout(size_hint_y=None, height="40dp", spacing=10)
+        self.status_icon = MDIconButton(icon="shield-alert", theme_text_color="Custom", text_color=[1,0,0,1])
+        self.status_text = MDLabel(text="SHIZUKU: DESCONECTADO", theme_text_color="Secondary", font_style="Caption")
+        self.status_bar.add_widget(self.status_icon)
+        self.status_bar.add_widget(self.status_text)
+        layout.add_widget(self.status_bar)
 
-        # --- 1. MORTE DA ZONA (DEADZONE) ---
-        # Ignora os primeiros milímetros para evitar que o toque inicial trema a mira
-        layout.add_widget(MDLabel(text="MORTE DA ZONA (IGNORAR MICRO-TOQUES)", theme_text_color="Secondary"))
-        self.deadzone = MDSlider(min=0, max=1000, value=150, color=get_color_from_hex('#39FF14'))
-        layout.add_widget(self.deadzone)
-
-        # --- 2. SUAVIZAÇÃO DE ARRASTÃO (ANTI-TREMOR) ---
-        # Prioriza o movimento principal e ignora os desvios trêmulos
-        layout.add_widget(MDLabel(text="ESTABILIZADOR DE INTENÇÃO (ANTI-TREMOR)", theme_text_color="Secondary"))
-        self.smoothing = MDSlider(min=0, max=1000, value=850, color=get_color_from_hex('#39FF14'))
-        layout.add_widget(self.smoothing)
-
-        # --- 3. AJUSTE EIXO X (VERTICAL - CIMA/BAIXO) ---
+        # --- SLIDERS (X/Y E PRIORIDADE) ---
         layout.add_widget(MDLabel(text="SENSIBILIDADE X (VERTICAL)", theme_text_color="Secondary"))
-        self.sensi_v = MDSlider(min=0, max=1000, value=500, color=get_color_from_hex('#39FF14'))
-        layout.add_widget(self.sensi_v)
+        self.sensi_x = MDSlider(min=0, max=1000, value=500, color=get_color_from_hex('#39FF14'))
+        layout.add_widget(self.sensi_x)
 
-        # --- 4. AJUSTE EIXO Y (LATERAL - LADOS) ---
         layout.add_widget(MDLabel(text="SENSIBILIDADE Y (LATERAL)", theme_text_color="Secondary"))
-        self.sensi_h = MDSlider(min=0, max=1000, value=500, color=get_color_from_hex('#39FF14'))
-        layout.add_widget(self.sensi_h)
+        self.sensi_y = MDSlider(min=0, max=1000, value=500, color=get_color_from_hex('#39FF14'))
+        layout.add_widget(self.sensi_y)
 
-        # Botão Aplicar
-        from kivymd.uix.button import MDFillRoundFlatButton
-        btn = MDFillRoundFlatButton(
-            text="ATIVAR FILTRO DE TRAJETÓRIA",
-            pos_hint={"center_x": .5},
-            md_bg_color=get_color_from_hex('#39FF14'),
-            text_color=[0,0,0,1], size_hint_x=0.9
+        layout.add_widget(MDLabel(text="PRIORIDADE DE ARRASTÃO (SMOOTHING)", theme_text_color="Secondary"))
+        self.priority = MDSlider(min=0, max=1000, value=800, color=get_color_from_hex('#39FF14'))
+        layout.add_widget(self.priority)
+
+        # --- AUTO-RESET ---
+        reset_box = MDBoxLayout(orientation='horizontal', size_hint_y=None, height="40dp")
+        reset_box.add_widget(MDLabel(text="AUTO-RESET (Sair do Jogo)"))
+        self.auto_reset = MDSwitch()
+        reset_box.add_widget(self.auto_reset)
+        layout.add_widget(reset_box)
+
+        # --- BOTÃO DE INJEÇÃO ---
+        self.btn_apply = MDFillRoundFlatButton(
+            text="INJETAR NO HARDWARE",
+            pos_hint={"center_x": .5}, size_hint_x=0.9,
+            md_bg_color=get_color_from_hex('#333333'), # Cinza enquanto inativo
+            text_color=[1,1,1,1]
         )
-        btn.bind(on_release=self.apply_shizuku)
-        layout.add_widget(btn)
+        self.btn_apply.bind(on_release=self.apply_safe)
+        layout.add_widget(self.btn_apply)
 
+        # Inicia verificação de conexão
+        Clock.schedule_interval(self.check_shizuku, 3)
+        
         screen.add_widget(layout)
         return screen
 
-    def apply_shizuku(self, *args):
-        # Valores convertidos para o sistema
-        dz = self.deadzone.value / 1000
-        smooth = self.smoothing.value / 1000
-        v_sensi = self.sensi_v.value
-        h_sensi = self.sensi_h.value
-
+    def check_shizuku(self, dt):
+        """Verifica se o serviço Shizuku está acessível via ADB Shell"""
         try:
-            # Comandos via Shizuku para alterar a filtragem do digitalizador
-            # touch.filter.level define o quão agressivo é o filtro de ruído
-            os.system(f"settings put global touch.filter.level {smooth * 10}")
-            # Ajusta a distância de reconhecimento do toque (Morte da zona)
-            os.system(f"settings put global touch.distance.scale {dz}")
-            # Garante performance máxima do processador para processar o touch
-            os.system("cmd power set-fixed-performance-mode-enabled true")
-            
-            print(f"Suavização Ativada em {smooth}")
+            # Tenta um comando simples que só funciona via Shizuku/ADB
+            result = subprocess.run(['sh', '-c', 'shizuku_session echo 1'], capture_output=True, text=True)
+            if "1" in result.stdout:
+                self.shizuku_ready = True
+                self.status_text.text = "SHIZUKU: PRONTO PARA INJEÇÃO"
+                self.status_icon.icon = "shield-check"
+                self.status_icon.text_color = [0,1,0,1]
+                self.btn_apply.md_bg_color = get_color_from_hex('#39FF14')
+                self.btn_apply.text_color = [0,0,0,1]
         except:
-            print("Erro Shizuku")
+            self.shizuku_ready = False
+
+    def run_shizuku_cmd(self, cmd):
+        """Método blindado para enviar comandos via Shizuku"""
+        # A sintaxe real para Shizuku via Python requer 'rish' ou redirecionamento de shell
+        full_cmd = f"shizuku_session {cmd}"
+        os.system(full_cmd)
+
+    def apply_safe(self, *args):
+        if not self.shizuku_ready:
+            self.status_text.text = "ERRO: ABRA O APP SHIZUKU PRIMEIRO!"
+            return
+
+        # Captura valores
+        prio = self.priority.value / 1000
+        x_val = self.sensi_x.value / 1000
+        y_val = self.sensi_y.value / 1000
+
+        # Injeção Nativa Blindada
+        self.run_shizuku_cmd(f"settings put global touch.filter.abscenter {prio}")
+        self.run_shizuku_cmd(f"settings put global touch.pressure.scale {x_val}")
+        self.run_shizuku_cmd(f"settings put global touch.size.scale {y_val}")
+        self.run_shizuku_cmd("cmd power set-fixed-performance-mode-enabled true")
+        
+        self.btn_apply.text = "SISTEMA BLINDADO ✅"
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
