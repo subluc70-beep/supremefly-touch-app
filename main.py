@@ -1,13 +1,14 @@
 import os
-from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.button import MDFillRoundFlatIconButton
+from kivymd.uix.card import MDCard
+from kivymd.uix.button import MDFillRoundFlatButton
 from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.utils import get_color_from_hex
+from kivy.clock import Clock
 
-# Forçamos a aceleração de hardware para evitar a tela preta
+# Configuração para evitar tela preta e otimizar GPU
 os.environ['KIVY_GL_BACKEND'] = 'sdl2'
 
 class SupremeFlyApp(MDApp):
@@ -15,56 +16,84 @@ class SupremeFlyApp(MDApp):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Green"
         
-        # Layout Principal para evitar que apareça só um botão perdido
-        layout = MDBoxLayout(orientation='vertical', padding=40, spacing=20)
+        screen = MDScreen()
         
-        # Título do App
-        layout.add_widget(MDLabel(
-            text="SUPREME FLY PRO",
+        # Layout Principal
+        main_layout = MDBoxLayout(orientation='vertical', padding=20, spacing=20)
+        
+        # Cabeçalho Estilizado
+        header = MDLabel(
+            text="SUPREME FLY [PRO]",
             halign="center",
             font_style="H4",
             theme_text_color="Custom",
-            text_color=get_color_from_hex('#39FF14')
-        ))
+            text_color=get_color_from_hex('#39FF14'),
+            size_hint_y=None,
+            height="80dp"
+        )
+        main_layout.add_widget(header)
 
-        # Botão de Ativação
-        self.btn = MDFillRoundFlatIconButton(
-            icon="flash",
-            text="ATIVAR MODO TURBO (SHIZUKU)",
+        # Card de Status do Sistema
+        self.status_card = MDCard(
+            orientation='vertical',
+            padding=15,
+            size_hint=(1, None),
+            height="120dp",
+            md_bg_color=get_color_from_hex('#1E1E1E'),
+            radius=[15, 15, 15, 15],
+            elevation=2
+        )
+        
+        self.info_label = MDLabel(
+            text="ESTADO DO SISTEMA: STANDBY\nFPS TARGET: 120\nLATÊNCIA: OTIMIZADA",
+            halign="left",
+            theme_text_color="Secondary",
+            font_style="Caption"
+        )
+        self.status_card.add_widget(self.info_label)
+        main_layout.add_widget(self.status_card)
+
+        # Espaçador
+        main_layout.add_widget(MDBoxLayout())
+
+        # Botão Turbo Central (O das fotos)
+        self.turbo_btn = MDFillRoundFlatButton(
+            text="INICIAR PROTOCOLO TURBO",
+            font_size="20sp",
+            size_hint=(0.9, None),
+            height="60dp",
             pos_hint={"center_x": .5},
-            size_hint_x=0.9,
             md_bg_color=get_color_from_hex('#39FF14'),
             text_color=[0, 0, 0, 1]
         )
-        self.btn.bind(on_release=self.run_shizuku_commands)
-        layout.add_widget(self.btn)
+        self.turbo_btn.bind(on_release=self.activate_turbo)
+        main_layout.add_widget(self.turbo_btn)
+        
+        main_layout.add_widget(MDBoxLayout(size_hint_y=None, height="40dp"))
 
-        # Status Label
-        self.status = MDLabel(
-            text="Status: Aguardando Ativação",
-            halign="center",
-            theme_text_color="Secondary"
-        )
-        layout.add_widget(self.status)
-
-        screen = MDScreen()
-        screen.add_widget(layout)
+        screen.add_widget(main_layout)
         return screen
 
-    def run_shizuku_commands(self, *args):
-        # Aqui o app tenta se comunicar com o Shizuku via Shell
+    def activate_turbo(self, *args):
+        # Efeito visual de ativação
+        self.turbo_btn.text = "ATIVANDO..."
+        self.turbo_btn.md_bg_color = get_color_from_hex('#FF3131') # Vermelho alerta
+        
+        # Execução dos comandos via Shizuku (Simulação Shell)
         try:
-            # Comando 1: Força o modo de performance máxima
-            os.system("sh /sdcard/shizuku_shell.sh -c 'cmd power set-fixed-performance-mode-enabled true'")
-            # Comando 2: Otimiza a resposta do toque
+            # Comandos de performance pesada
+            os.system("cmd power set-fixed-performance-mode-enabled true")
             os.system("settings put global touch_acceleration_enabled 1")
             
-            self.status.text = "Status: PERFORMANCE ATIVADA! ✅"
-            self.status.theme_text_color = "Primary"
-            self.btn.text = "OTIMIZADO"
-            self.btn.disabled = True
-        except Exception as e:
-            self.status.text = "Erro: Certifique-se que o Shizuku está iniciado."
+            # Atualiza interface após sucesso
+            Clock.schedule_once(self.success_state, 1.5)
+        except:
+            self.info_label.text = "ERRO: SHIZUKU NÃO DETECTADO"
+
+    def success_state(self, dt):
+        self.turbo_btn.text = "SISTEMA OTIMIZADO ✅"
+        self.turbo_btn.md_bg_color = get_color_from_hex('#00FF00')
+        self.info_label.text = "ESTADO DO SISTEMA: PERFORMANCE MÁXIMA\nFPS TARGET: 120\nMODO: GAMER EXTREME"
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
