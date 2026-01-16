@@ -1,0 +1,50 @@
+MDScreen:
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 15
+        md_bg_color: 0, 0, 0, 1  # Fundo preto puro
+
+        MDLabel:
+            text: "SUPREMEFLY REGEDIT"
+            halign: "center"
+            font_style: "H4"
+            theme_text_color: "Custom"
+            text_color: 0.22, 1, 0.08, 1
+
+        # Círculo Central (Aqui você pode usar uma imagem PNG)
+        AsyncImage:
+            source: 'circulo_neon.png' # Se tiver a imagem
+            size_hint_y: 0.3
+
+        MDLabel:
+            text: "SENSIBILIDADE X (VERTICAL)"
+            theme_text_color: "Secondary"
+        MDSlider:
+            id: sensi_x
+            min: 0
+            max: 1000
+            value: 500
+
+        MDLabel:
+            text: "SENSIBILIDADE Y (LATERAL)"
+            theme_text_color: "Secondary"
+        MDSlider:
+            id: sensi_y
+            min: 0
+            max: 1000
+            value: 500
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            MDLabel:
+                text: "PRIORIDADE DE ARRASTÃO"
+            MDSwitch:
+                id: switch_prio
+                active: True
+
+        MDFillRoundFlatButton:
+            text: "INJETAR NO HARDWARE"
+            size_hint_x: 0.9
+            pos_hint: {"center_x": .5}
+            on_release: app.apply_logic()
