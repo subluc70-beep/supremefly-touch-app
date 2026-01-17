@@ -1,32 +1,48 @@
-name: Build_SupremeFly
-on: [push, workflow_dispatch]
+name: Build SupremeFly APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  android:
-    runs-on: ubuntu-22.04
+  build:
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do Código
+        uses: actions/checkout@v3
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Instalar Dependências do Sistema
         run: |
-          sudo apt update
-          sudo apt install -y build-essential git ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libsqlite3-dev sqlite3 bzip2 libbz2-dev libffi-dev libssl-dev
+          sudo apt-get update
+          sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget curl libncursesw5-dev
+          sudo apt-get install -y m4 libtool libltdl-dev autoconf automake libtool-bin
+          sudo apt-get install -y python3-pip
+          sudo apt-get install -y zip unzip
+          sudo apt-get install -y openjdk-17-jdk
+
+      - name: Instalar Buildozer e Cython
+        run: |
           pip install --upgrade pip
-          pip install "Cython<3.0" virtualenv buildozer
+          pip install buildozer cython==0.29.33
 
-      - name: Build APK
+      - name: Build do APK (Limpeza e Compilação)
         run: |
-          export PATH=$PATH:$HOME/.local/bin
+          # O comando 'clean' remove rastros do código antigo (solução da tela preta)
+          buildozer android clean
           buildozer android debug
-        
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+        env:
+          # Aceita as licenças do Android automaticamente
+          ACCEPT_SDK_LICENSE: "y"
+
+      - name: Upload do APK
+        uses: actions/upload-artifact@v3
         with:
-          name: SupremeFly-Package
+          name: SupremeFly-V4-Debug
           path: bin/*.apk
