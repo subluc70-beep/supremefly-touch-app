@@ -1,46 +1,43 @@
 #:import get_color_from_hex kivy.utils.get_color_from_hex
 
 MDScreen:
-    md_bg_color: 0, 0, 0, 1  # Fundo Preto Total (Essencial para o Neon)
+    md_bg_color: 0, 0, 0, 1
 
-    # Camada de Desenho (O Círculo da Foto)
+    # Círculo Neon de Fundo
     Widget:
         canvas:
             Color:
-                rgba: get_color_from_hex('#39FF14') # Verde Neon
-            Line:
-                # Desenha o círculo centralizado
-                circle: (self.center_x, self.center_y + dp(100), dp(80))
-                width: dp(1.5)
-            Color:
-                rgba: 0.22, 1, 0.08, 0.1 # Sombra/Brilho do Neon
+                rgba: get_color_from_hex('#39FF14')
             Line:
                 circle: (self.center_x, self.center_y + dp(100), dp(85))
-                width: dp(4)
+                width: dp(2)
+            Color:
+                rgba: 0.22, 1, 0.08, 0.15
+            Line:
+                circle: (self.center_x, self.center_y + dp(100), dp(92))
+                width: dp(5)
 
     MDBoxLayout:
         orientation: 'vertical'
-        padding: dp(20)
-        spacing: dp(10)
+        padding: dp(25)
+        spacing: dp(15)
 
         MDLabel:
             text: "SUPREMEFLY REGEDIT"
             halign: "center"
-            font_style: "H5"
+            font_style: "H4"
             bold: True
             theme_text_color: "Custom"
             text_color: get_color_from_hex('#39FF14')
 
-        # Espaço reservado para o círculo não ficar embaixo do texto
         Widget:
             size_hint_y: None
-            height: dp(180)
+            height: dp(180) # Espaço para o círculo
 
         MDLabel:
-            text: "SENSIBILIDADE DE HARDWARE"
+            text: "SENSIBILIDADE X (VERTICAL)"
             theme_text_color: "Secondary"
             font_style: "Caption"
-            halign: "center"
 
         MDSlider:
             id: sensi_x
@@ -49,19 +46,20 @@ MDScreen:
             value: 500
             color: get_color_from_hex('#39FF14')
 
-        MDBoxLayout:
-            orientation: 'horizontal'
-            size_hint_y: None
-            height: dp(50)
-            MDLabel:
-                text: "OTIMIZAR ARRASTÃO"
-                theme_text_color: "Primary"
-            MDSwitch:
-                id: switch_prio
-                active: True
+        MDLabel:
+            text: "SENSIBILIDADE Y (LATERAL)"
+            theme_text_color: "Secondary"
+            font_style: "Caption"
+
+        MDSlider:
+            id: sensi_y
+            min: 0
+            max: 1000
+            value: 500
+            color: get_color_from_hex('#39FF14')
 
         MDFillRoundFlatButton:
-            text: "APLICAR NO MOTO G30"
+            text: "INJETAR NO HARDWARE"
             size_hint_x: 1
             md_bg_color: get_color_from_hex('#39FF14')
             text_color: 0, 0, 0, 1
@@ -69,7 +67,7 @@ MDScreen:
 
         MDLabel:
             id: log_label
-            text: "> Sistema Aguardando..."
+            text: "> SISTEMA PRONTO"
             halign: "center"
-            font_style: "Caption"
-            theme_text_color: "Hint"
+            theme_text_color: "Custom"
+            text_color: get_color_from_hex('#39FF14')
