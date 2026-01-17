@@ -8,29 +8,34 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - name: Checkout do Código
+        uses: actions/checkout@v4 # Atualizado para v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5 # Atualizado para v5
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Instalar Dependências do Sistema
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget curl libncursesw5-dev libtool-bin openjdk-17-jdk zip unzip
 
-      - name: Install Buildozer
-        run: pip install buildozer cython==0.29.33
+      - name: Instalar Buildozer e Cython
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.33
 
-      - name: Build with Clean
+      - name: Build do APK
         run: |
           buildozer android clean
           buildozer android debug
         env:
           ACCEPT_SDK_LICENSE: "y"
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
+      - name: Upload do APK Finalizado
+        uses: actions/upload-artifact@v4 # A SOLUÇÃO DO SEU ERRO ESTÁ AQUI
         with:
           name: SupremeFly-Android11-Plus
           path: bin/*.apk
+          retention-days: 5
