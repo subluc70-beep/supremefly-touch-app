@@ -3,15 +3,16 @@
 MDScreen:
     md_bg_color: 0, 0, 0, 1
 
+    # Elementos Visuais Neon
     Widget:
         canvas:
             Color:
                 rgba: get_color_from_hex('#39FF14')
             Line:
                 circle: (self.center_x, self.center_y + dp(100), dp(85))
-                width: dp(2)
+                width: dp(2.2)
             Color:
-                rgba: 0.22, 1, 0.08, 0.1
+                rgba: 0.22, 1, 0.08, 0.15
             Line:
                 circle: (self.center_x, self.center_y + dp(100), dp(95))
                 width: dp(4)
@@ -22,7 +23,7 @@ MDScreen:
         spacing: dp(15)
 
         MDLabel:
-            text: "SUPREMEFLY REGEDIT"
+            text: "SUPREMEFLY TOUCH"
             halign: "center"
             font_style: "H4"
             bold: True
@@ -45,26 +46,28 @@ MDScreen:
             id: sensi_x
             min: 0
             max: 1000
-            value: 600
+            value: 800
             color: get_color_from_hex('#39FF14')
 
         MDSlider:
             id: sensi_y
             min: 0
             max: 1000
-            value: 750
+            value: 850
             color: get_color_from_hex('#39FF14')
 
         MDFillRoundFlatButton:
-            text: "INJETAR VIA SHIZUKU"
+            text: "ATIVAR OTIMIZAÇÃO"
             size_hint_x: 1
             md_bg_color: get_color_from_hex('#39FF14')
             text_color: 0, 0, 0, 1
+            font_style: "Button"
             on_release: app.apply_hardware_logic()
 
         MDLabel:
             id: log_label
-            text: "> SISTEMA PRONTO"
+            text: "> SISTEMA AGUARDANDO"
             halign: "center"
+            font_style: "Caption"
             theme_text_color: "Custom"
             text_color: get_color_from_hex('#39FF14')
