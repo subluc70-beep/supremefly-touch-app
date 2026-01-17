@@ -8,7 +8,10 @@ class SupremeFlyApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Green"
-        # Tenta carregar o arquivo externo com tratamento de erro
+        # Força o carregamento ignorando erros de cache
+        from kivy.lang import Builder
+        self.root = Builder.load_file('principal.kv')
+        return self.root
         try:
             return Builder.load_file('principal.kv')
         except Exception as e:
