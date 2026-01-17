@@ -1,47 +1,46 @@
 #:import get_color_from_hex kivy.utils.get_color_from_hex
 
 MDScreen:
-    md_bg_color: 0, 0, 0, 1  # Fundo preto absoluto
+    md_bg_color: 0, 0, 0, 1  # Fundo Preto Total (Essencial para o Neon)
 
-    # Desenho do Círculo Neon (O detalhe da foto)
+    # Camada de Desenho (O Círculo da Foto)
     Widget:
         canvas:
             Color:
                 rgba: get_color_from_hex('#39FF14') # Verde Neon
             Line:
+                # Desenha o círculo centralizado
                 circle: (self.center_x, self.center_y + dp(100), dp(80))
-                width: 2
+                width: dp(1.5)
             Color:
-                rgba: get_color_from_hex('#39FF1433') # Brilho suave (transparente)
+                rgba: 0.22, 1, 0.08, 0.1 # Sombra/Brilho do Neon
             Line:
                 circle: (self.center_x, self.center_y + dp(100), dp(85))
-                width: 4
+                width: dp(4)
 
     MDBoxLayout:
         orientation: 'vertical'
-        padding: [dp(25), dp(50), dp(25), dp(25)]
-        spacing: dp(15)
+        padding: dp(20)
+        spacing: dp(10)
 
         MDLabel:
-            text: "SUPREMEFLY V3"
+            text: "SUPREMEFLY REGEDIT"
             halign: "center"
-            font_style: "H4"
+            font_style: "H5"
             bold: True
             theme_text_color: "Custom"
             text_color: get_color_from_hex('#39FF14')
-            size_hint_y: None
-            height: dp(60)
 
-        # Espaçador para o círculo não ficar em cima do texto
+        # Espaço reservado para o círculo não ficar embaixo do texto
         Widget:
             size_hint_y: None
-            height: dp(160)
+            height: dp(180)
 
-        # --- CONTROLES ---
         MDLabel:
-            text: "SENSIBILIDADE VERTICAL (X)"
+            text: "SENSIBILIDADE DE HARDWARE"
             theme_text_color: "Secondary"
             font_style: "Caption"
+            halign: "center"
 
         MDSlider:
             id: sensi_x
@@ -49,37 +48,20 @@ MDScreen:
             max: 1000
             value: 500
             color: get_color_from_hex('#39FF14')
-            hint: True
 
-        MDLabel:
-            text: "SENSIBILIDADE LATERAL (Y)"
-            theme_text_color: "Secondary"
-            font_style: "Caption"
-
-        MDSlider:
-            id: sensi_y
-            min: 0
-            max: 1000
-            value: 500
-            color: get_color_from_hex('#39FF14')
-            hint: True
-
-        # --- SWITCHES NATIVOS ---
         MDBoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
             height: dp(50)
             MDLabel:
-                text: "PRIORIDADE DE ARRASTÃO"
+                text: "OTIMIZAR ARRASTÃO"
                 theme_text_color: "Primary"
             MDSwitch:
                 id: switch_prio
                 active: True
-                thumb_color_active: get_color_from_hex('#39FF14')
 
         MDFillRoundFlatButton:
-            text: "INJETAR NO HARDWARE"
-            font_style: "Button"
+            text: "APLICAR NO MOTO G30"
             size_hint_x: 1
             md_bg_color: get_color_from_hex('#39FF14')
             text_color: 0, 0, 0, 1
@@ -87,7 +69,7 @@ MDScreen:
 
         MDLabel:
             id: log_label
-            text: "> Sistema Pronto"
+            text: "> Sistema Aguardando..."
             halign: "center"
             font_style: "Caption"
             theme_text_color: "Hint"
