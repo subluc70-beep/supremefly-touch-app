@@ -1,46 +1,55 @@
 import os
 from kivymd.app import MDApp
 from kivy.lang import Builder
-from kivy.clock import Clock
 from kivy.utils import platform
 
 class SupremeFlyApp(MDApp):
     def build(self):
+        # Define o tema antes de carregar a interface
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Green"
-        # Força o carregamento ignorando erros de cache
-        from kivy.lang import Builder
-        self.root = Builder.load_file('principal.kv')
-        return self.root
+        
+        # Carrega o arquivo KV completo
         try:
-            return Builder.load_file('principal.kv')
+            self.root_widget = Builder.load_file('principal.kv')
+            return self.root_widget
         except Exception as e:
-            print(f"Erro no KV: {e}")
-            return Builder.load_string('<MDScreen><MDLabel text="Erro no KV" halign="center"/></MDScreen>')
+            # Caso o arquivo KV falhe, cria uma tela de erro para o app não fechar
+            return Builder.load_string(f'''
+MDScreen:
+    md_bg_color: 0,0,0,1
+    MDLabel:
+        text: "ERRO AO CARREGAR INTERFACE:\\n{str(e)}"
+        halign: "center"
+        theme_text_color: "Error"
+''')
 
     def apply_hardware_logic(self):
-        """Matemática de sensibilidade injetada no kernel via Shizuku"""
-        try:
-            # Captura os valores dos Sliders do principal.kv
-            x_val = self.root.ids.sensi_x.value / 1000
-            y_val = self.root.ids.sensi_y.value / 1000
-            
-            self.root.ids.log_label.text = f"> INJETANDO: X={x_val} Y={y_val}"
-            
-            if platform == 'android':
-                # Comandos via rish (Shizuku) para o Moto G30
-                cmd_x = f"sh /data/local/tmp/rish -c 'settings put global touch.pressure.scale {x_val}'"
-                cmd_y = f"sh /data/local/tmp/rish -c 'settings put global touch.size.scale {y_val}'"
+        """Função que força o Shizuku a reconhecer o app e injeta a sensi"""
+        if platform == 'android':
+            try:
+                # Pega os valores reais dos sliders
+                x = self.root_widget.ids.sensi_x.value / 1000
+                y = self.root_widget.ids.sensi_y.value / 1000
                 
-                os.system(cmd_x)
-                os.system(cmd_y)
+                # O COMANDO MESTRE: Tenta rodar via 'rish' no local padrão
+                # Isso forçará o Shizuku a notar a tentativa de acesso
+                comando = f"sh /data/local/tmp/rish -c 'settings put global touch.pressure.scale {x} && settings put global touch.size.scale {y}'"
                 
-                self.root.ids.log_label.text = "> HARDWARE ATUALIZADO COM SUCESSO!"
-                self.root.ids.log_label.text_color = [0, 1, 0, 1]
-            else:
-                self.root.ids.log_label.text = "> ERRO: USE NO ANDROID"
-        except Exception as e:
-            self.root.ids.log_label.text = f"> ERRO CRÍTICO: {str(e)}"
+                resultado = os.system(comando)
+                
+                if resultado == 0:
+                    self.root_widget.ids.log_label.text = f"> SUCESSO: X={x} Y={y}"
+                    self.root_widget.ids.log_label.text_color = [0, 1, 0, 1]
+                else:
+                    # Se falhar, é porque o Shizuku não autorizou ainda
+                    self.root_widget.ids.log_label.text = "> ERRO: AUTORIZE O APP NO SHIZUKU"
+                    self.root_widget.ids.log_label.text_color = [1, 0, 0, 1]
+                    
+            except Exception as e:
+                self.root_widget.ids.log_label.text = f"> ERRO: {str(e)}"
+        else:
+            self.root_widget.ids.log_label.text = "> ERRO: RODAR NO ANDROID"
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
