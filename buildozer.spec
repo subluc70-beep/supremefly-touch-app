@@ -12,6 +12,8 @@ source.include_exts = py,png,jpg,kv,atlas
 source.include_patterns = assets/*,*.kv
 
 # --- Requisitos (VERSÕES TRAVADAS PARA NÃO CRASHAR) ---
+# ERRADO: requisitos = python3, ...
+# CORRETO:
 requirements = python3, kivy==2.3.0, kivymd==1.2.0, pillow, pyjnius
 
 orientation = portrait
