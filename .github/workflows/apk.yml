@@ -1,4 +1,4 @@
-name: Build SupremeFly APK
+name: Build SupremeFly
 on:
   push:
     branches: [ main ]
@@ -8,37 +8,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do Código
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configurar Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Instalar Dependências do Sistema
+      - name: Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget curl libncursesw5-dev libtool-bin openjdk-17-jdk zip unzip
 
-      - name: Instalar Buildozer e Cython
+      - name: Buildozer Install
         run: |
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
-      - name: Build do APK (Correção de Caminho)
-        run: |
-          # Primeiro inicializamos o buildozer sem rodar o build completo para ele criar as pastas
-          buildozer init
-          # Agora rodamos o build direto. O GitHub Actions já é um ambiente limpo, 
-          # então não precisamos do 'clean' que estava causando o erro de FileNotFoundError.
-          buildozer -v android debug
+      - name: Generate APK
+        run: buildozer android debug
         env:
           ACCEPT_SDK_LICENSE: "y"
 
-      - name: Upload do APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SupremeFly-Android11-Plus
+          name: SupremeFly-Touch-Final
           path: bin/*.apk
           retention-days: 5
