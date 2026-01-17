@@ -1,5 +1,4 @@
 name: Build SupremeFly APK
-
 on:
   push:
     branches: [ main ]
@@ -8,41 +7,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout do Código
-        uses: actions/checkout@v3
-
-      - name: Configurar Python
+      - uses: actions/checkout@v3
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Instalar Dependências do Sistema
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget curl libncursesw5-dev
-          sudo apt-get install -y m4 libtool libltdl-dev autoconf automake libtool-bin
-          sudo apt-get install -y python3-pip
-          sudo apt-get install -y zip unzip
-          sudo apt-get install -y openjdk-17-jdk
+          sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget curl libncursesw5-dev libtool-bin openjdk-17-jdk zip unzip
 
-      - name: Instalar Buildozer e Cython
-        run: |
-          pip install --upgrade pip
-          pip install buildozer cython==0.29.33
+      - name: Install Buildozer
+        run: pip install buildozer cython==0.29.33
 
-      - name: Build do APK (Limpeza e Compilação)
+      - name: Build with Clean
         run: |
-          # O comando 'clean' remove rastros do código antigo (solução da tela preta)
           buildozer android clean
           buildozer android debug
         env:
-          # Aceita as licenças do Android automaticamente
           ACCEPT_SDK_LICENSE: "y"
 
-      - name: Upload do APK
+      - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
-          name: SupremeFly-V4-Debug
+          name: SupremeFly-Android11-Plus
           path: bin/*.apk
