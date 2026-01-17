@@ -3,38 +3,38 @@
 MDScreen:
     md_bg_color: 0, 0, 0, 1
 
-    # Círculo Neon via Canvas (Desenho Direto na GPU)
+    # Círculo Neon de Fundo (Pintado na GPU)
     Widget:
         canvas:
             Color:
                 rgba: get_color_from_hex('#39FF14')
             Line:
-                circle: (self.center_x, self.center_y + dp(110), dp(85))
+                circle: (self.center_x, self.center_y + dp(100), dp(85))
                 width: dp(1.8)
             Color:
-                rgba: 0.22, 1, 0.08, 0.2
+                rgba: 0.22, 1, 0.08, 0.15
             Line:
-                circle: (self.center_x, self.center_y + dp(110), dp(92))
+                circle: (self.center_x, self.center_y + dp(100), dp(95))
                 width: dp(4)
 
     MDBoxLayout:
         orientation: 'vertical'
-        padding: [dp(25), dp(40), dp(25), dp(25)]
-        spacing: dp(15)
+        padding: dp(25)
+        spacing: dp(12)
 
         MDLabel:
-            text: "SUPREMEFLY REGEDIT V3"
+            text: "SUPREMEFLY REGEDIT V4"
             halign: "center"
             font_style: "H4"
             bold: True
             theme_text_color: "Custom"
             text_color: get_color_from_hex('#39FF14')
             size_hint_y: None
-            height: dp(60)
+            height: dp(80)
 
         Widget:
             size_hint_y: None
-            height: dp(190)
+            height: dp(180) # Espaço para o círculo aparecer
 
         MDLabel:
             text: "SENSIBILIDADE X / Y"
@@ -57,7 +57,7 @@ MDScreen:
             color: get_color_from_hex('#39FF14')
 
         MDFillRoundFlatButton:
-            text: "EXECUTAR INJEÇÃO"
+            text: "EXECUTAR NO HARDWARE"
             size_hint_x: 1
             md_bg_color: get_color_from_hex('#39FF14')
             text_color: 0, 0, 0, 1
@@ -68,6 +68,6 @@ MDScreen:
             id: log_label
             text: "> SISTEMA AGUARDANDO COMANDO"
             halign: "center"
-            font_style: "Caption"
             theme_text_color: "Custom"
             text_color: get_color_from_hex('#39FF14')
+            font_style: "Caption"
