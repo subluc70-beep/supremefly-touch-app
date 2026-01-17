@@ -3,16 +3,15 @@
 MDScreen:
     md_bg_color: 0, 0, 0, 1
 
-    # Círculo Neon de Fundo (Pintado na GPU)
     Widget:
         canvas:
             Color:
                 rgba: get_color_from_hex('#39FF14')
             Line:
                 circle: (self.center_x, self.center_y + dp(100), dp(85))
-                width: dp(1.8)
+                width: dp(2)
             Color:
-                rgba: 0.22, 1, 0.08, 0.15
+                rgba: 0.22, 1, 0.08, 0.1
             Line:
                 circle: (self.center_x, self.center_y + dp(100), dp(95))
                 width: dp(4)
@@ -20,10 +19,10 @@ MDScreen:
     MDBoxLayout:
         orientation: 'vertical'
         padding: dp(25)
-        spacing: dp(12)
+        spacing: dp(15)
 
         MDLabel:
-            text: "SUPREMEFLY REGEDIT V4"
+            text: "SUPREMEFLY REGEDIT"
             halign: "center"
             font_style: "H4"
             bold: True
@@ -34,10 +33,10 @@ MDScreen:
 
         Widget:
             size_hint_y: None
-            height: dp(180) # Espaço para o círculo aparecer
+            height: dp(180)
 
         MDLabel:
-            text: "SENSIBILIDADE X / Y"
+            text: "SENSIBILIDADE DE HARDWARE"
             theme_text_color: "Secondary"
             font_style: "Caption"
             halign: "center"
@@ -46,28 +45,26 @@ MDScreen:
             id: sensi_x
             min: 0
             max: 1000
-            value: 650
+            value: 600
             color: get_color_from_hex('#39FF14')
 
         MDSlider:
             id: sensi_y
             min: 0
             max: 1000
-            value: 800
+            value: 750
             color: get_color_from_hex('#39FF14')
 
         MDFillRoundFlatButton:
-            text: "EXECUTAR NO HARDWARE"
+            text: "INJETAR VIA SHIZUKU"
             size_hint_x: 1
             md_bg_color: get_color_from_hex('#39FF14')
             text_color: 0, 0, 0, 1
-            font_style: "Button"
             on_release: app.apply_hardware_logic()
 
         MDLabel:
             id: log_label
-            text: "> SISTEMA AGUARDANDO COMANDO"
+            text: "> SISTEMA PRONTO"
             halign: "center"
             theme_text_color: "Custom"
             text_color: get_color_from_hex('#39FF14')
-            font_style: "Caption"
