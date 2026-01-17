@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do Código
-        uses: actions/checkout@v4 # Atualizado para v4
+        uses: actions/checkout@v4
 
       - name: Configurar Python
-        uses: actions/setup-python@v5 # Atualizado para v5
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -26,15 +26,18 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
-      - name: Build do APK
+      - name: Build do APK (Correção de Caminho)
         run: |
-          buildozer android clean
-          buildozer android debug
+          # Primeiro inicializamos o buildozer sem rodar o build completo para ele criar as pastas
+          buildozer init
+          # Agora rodamos o build direto. O GitHub Actions já é um ambiente limpo, 
+          # então não precisamos do 'clean' que estava causando o erro de FileNotFoundError.
+          buildozer -v android debug
         env:
           ACCEPT_SDK_LICENSE: "y"
 
-      - name: Upload do APK Finalizado
-        uses: actions/upload-artifact@v4 # A SOLUÇÃO DO SEU ERRO ESTÁ AQUI
+      - name: Upload do APK
+        uses: actions/upload-artifact@v4
         with:
           name: SupremeFly-Android11-Plus
           path: bin/*.apk
