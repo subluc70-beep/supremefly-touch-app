@@ -1,22 +1,23 @@
 [app]
-title = SupremeFly Regedit
-package.name = supremeflyregedit
+title = SupremeFly Touch
+package.name = supremeflytouch
 package.domain = org.supremefly
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
-version = 5.0.0
+version = 6.0.0
 
-requirements = python3, kivy==2.3.0, kivymd==1.2.0, pyjnius
+requirements = python3, kivy==2.3.0, kivymd==1.2.0, pyjnius, pillow
 
 orientation = portrait
 
-# Permissões específicas para Android 11+
+# Permissões totais para injeção de hardware
 android.permissions = INTERNET, WRITE_SECURE_SETTINGS, QUERY_ALL_PACKAGES, FOREGROUND_SERVICE
+
+# Queries para o Shizuku não ser bloqueado pelo Android 11+
 android.manifest.queries = moe.shizuku.privileged.api
 
-# Foco em dispositivos modernos (64 bits)
 android.api = 33
-android.minapi = 30
+android.minapi = 29
 android.ndk = 25b
 android.archs = arm64-v8a
 android.accept_sdk_license = True
