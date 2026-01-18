@@ -13,10 +13,12 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Limpar Builds Antigos e Conflitos
+      - name: Limpeza Total e Preparação
         run: |
           rm -rf .buildozer/
-          rm -rf flet.yaml
+          # Remove variáveis de ambiente que forçam NDKs errados
+          unset ANDROID_NDK_HOME
+          unset ANDROID_NDK_ROOT
 
       - name: Instalar Dependências do Sistema
         run: |
