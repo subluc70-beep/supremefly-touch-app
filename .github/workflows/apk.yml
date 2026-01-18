@@ -3,45 +3,53 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Código
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java 17
+      - name: Setup Java 11
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '11'
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Limpeza e Preparação
+      - name: "Vacina NDK: Remover NDK 27"
         run: |
-          rm -rf .buildozer/
-          # Remove NDKs pré-instalados para evitar o conflito que vimos antes
+          # Remove fisicamente o NDK que o GitHub tenta forçar
+          sudo rm -rf $ANDROID_NDK_LATEST_HOME
+          sudo rm -rf $ANDROID_NDK_HOME
           sudo rm -rf /usr/local/lib/android/sdk/ndk
+          # Limpa variáveis de ambiente para a sessão atual
+          echo "ANDROID_NDK_HOME=" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=" >> $GITHUB_ENV
 
       - name: Instalar Dependências
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget curl libncursesw5-dev libtool-bin zip unzip
+          sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget curl libtool-bin zip unzip
 
-      - name: Instalar Buildozer e Cython
+      - name: Instalar Buildozer
         run: |
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
-      - name: Gerar APK
-        run: buildozer android debug
+      - name: Build APK
+        run: |
+          # Força o PATH a ignorar qualquer NDK externo
+          export ANDROID_NDK_HOME=""
+          export ANDROID_NDK_ROOT=""
+          buildozer android debug
         env:
           ACCEPT_SDK_LICENSE: "y"
 
-      - name: Upload APK
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: SupremeFly-Touch-Final
+          name: SupremeFly-V8
           path: bin/*.apk
