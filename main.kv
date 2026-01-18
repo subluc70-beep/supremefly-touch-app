@@ -3,44 +3,29 @@
 MDScreen:
     md_bg_color: 0, 0, 0, 1
 
-    # Elementos Visuais Neon
     Widget:
         canvas:
             Color:
                 rgba: get_color_from_hex('#39FF14')
             Line:
                 circle: (self.center_x, self.center_y + dp(100), dp(85))
-                width: dp(2.2)
-            Color:
-                rgba: 0.22, 1, 0.08, 0.15
-            Line:
-                circle: (self.center_x, self.center_y + dp(100), dp(95))
-                width: dp(4)
+                width: dp(2)
 
     MDBoxLayout:
         orientation: 'vertical'
-        padding: dp(25)
-        spacing: dp(15)
+        padding: dp(20)
+        spacing: dp(10)
 
         MDLabel:
             text: "SUPREMEFLY TOUCH"
             halign: "center"
             font_style: "H4"
-            bold: True
             theme_text_color: "Custom"
             text_color: get_color_from_hex('#39FF14')
-            size_hint_y: None
-            height: dp(80)
 
         Widget:
             size_hint_y: None
-            height: dp(180)
-
-        MDLabel:
-            text: "SENSIBILIDADE DE HARDWARE"
-            theme_text_color: "Secondary"
-            font_style: "Caption"
-            halign: "center"
+            height: dp(150)
 
         MDSlider:
             id: sensi_x
@@ -53,21 +38,19 @@ MDScreen:
             id: sensi_y
             min: 0
             max: 1000
-            value: 850
+            value: 800
             color: get_color_from_hex('#39FF14')
 
         MDFillRoundFlatButton:
-            text: "ATIVAR OTIMIZAÇÃO"
+            text: "APLICAR OTIMIZAÇÃO"
             size_hint_x: 1
             md_bg_color: get_color_from_hex('#39FF14')
             text_color: 0, 0, 0, 1
-            font_style: "Button"
             on_release: app.apply_hardware_logic()
 
         MDLabel:
             id: log_label
-            text: "> SISTEMA AGUARDANDO"
+            text: "> AGUARDANDO"
             halign: "center"
-            font_style: "Caption"
             theme_text_color: "Custom"
             text_color: get_color_from_hex('#39FF14')
