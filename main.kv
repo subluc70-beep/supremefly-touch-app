@@ -1,67 +1,40 @@
-#:import get_color_from_hex kivy.utils.get_color_from_hex
-
 MDScreen:
     md_bg_color: 0, 0, 0, 1
-
     MDBoxLayout:
         orientation: 'vertical'
-        padding: dp(25)
+        padding: dp(20)
         spacing: dp(15)
-
         MDLabel:
             text: "SUPREMEFLY TOUCH"
             halign: "center"
             font_style: "H4"
-            bold: True
             theme_text_color: "Custom"
-            text_color: get_color_from_hex('#39FF14')
-            size_hint_y: None
-            height: dp(60)
-
-        MDLabel:
-            text: "OTIMIZAÇÃO DE SENSIBILIDADE"
-            halign: "center"
-            theme_text_color: "Secondary"
-            font_style: "Caption"
-
-        # Painel Central de Sliders
+            text_color: 0.2, 1, 0.2, 1
         MDBoxLayout:
             orientation: 'vertical'
-            spacing: dp(30)
-            padding: [0, dp(40)]
-
-            MDLabel:
-                text: f"Sensibilidade X: {int(sensi_x.value)}"
-                theme_text_color: "Primary"
+            spacing: dp(40)
+            padding: [0, dp(20)]
             MDSlider:
                 id: sensi_x
                 min: 0
                 max: 1000
                 value: 800
-                color: get_color_from_hex('#39FF14')
-
-            MDLabel:
-                text: f"Sensibilidade Y: {int(sensi_y.value)}"
-                theme_text_color: "Primary"
+                color: 0.2, 1, 0.2, 1
             MDSlider:
                 id: sensi_y
                 min: 0
                 max: 1000
                 value: 800
-                color: get_color_from_hex('#39FF14')
-
+                color: 0.2, 1, 0.2, 1
         MDFillRoundFlatButton:
-            text: "APLICAR VIA SHIZUKU"
+            text: "OTIMIZAR HARDWARE"
             size_hint_x: 1
-            height: dp(50)
-            md_bg_color: get_color_from_hex('#39FF14')
+            md_bg_color: 0.2, 1, 0.2, 1
             text_color: 0, 0, 0, 1
             on_release: app.apply_optimization()
-
         MDLabel:
             id: log_status
-            text: "> SISTEMA PRONTO"
+            text: "> AGUARDANDO COMANDO"
             halign: "center"
-            font_style: "Button"
             theme_text_color: "Custom"
-            text_color: get_color_from_hex('#39FF14')
+            text_color: 0.2, 1, 0.2, 1
