@@ -13,17 +13,19 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Limpeza Total de Conflitos
+      - name: Limpar Builds Antigos e Conflitos
         run: |
-          # Remove arquivos do antigo framework Flet para não dar erro no Kivy
+          rm -rf .buildozer/
           rm -rf flet.yaml
-          rm -rf .flet_*
-          rm -rf assets/flet*
 
-      - name: Instalar Dependências
+      - name: Instalar Dependências do Sistema
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget curl libncursesw5-dev libtool-bin openjdk-17-jdk zip unzip
+
+      - name: Instalar Buildozer e Cython
+        run: |
+          pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
       - name: Gerar APK Final
@@ -34,5 +36,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SupremeFly-Touch-Limpo
+          name: SupremeFly-Touch-V6
           path: bin/*.apk
