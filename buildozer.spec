@@ -4,16 +4,17 @@ package.name = supremeflytouch
 package.domain = org.supremefly
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
-version = 6.1.0
+version = 6.2.0
 
 requirements = python3, kivy==2.3.0, kivymd==1.2.0, pyjnius, pillow
 
 orientation = portrait
 
-# Permissões para Shizuku e Android 11+
+# Permissões Necessárias
 android.permissions = INTERNET, WRITE_SECURE_SETTINGS, QUERY_ALL_PACKAGES, FOREGROUND_SERVICE
 android.manifest.queries = moe.shizuku.privileged.api
 
+# Estabilidade de Build
 android.api = 33
 android.minapi = 29
 android.ndk = 25b
