@@ -4,23 +4,26 @@ package.name = supremeflytouch
 package.domain = org.supremefly
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
-version = 6.2.0
+version = 6.3.0
 
 requirements = python3, kivy==2.3.0, kivymd==1.2.0, pyjnius, pillow
 
 orientation = portrait
 
-# Permissões Necessárias
+# Permissões para Shizuku e Android 11+
 android.permissions = INTERNET, WRITE_SECURE_SETTINGS, QUERY_ALL_PACKAGES, FOREGROUND_SERVICE
 android.manifest.queries = moe.shizuku.privileged.api
 
-# Estabilidade de Build
+# ESTABILIDADE DO GRADLE
 android.api = 33
 android.minapi = 29
 android.ndk = 25b
 android.archs = arm64-v8a
 android.accept_sdk_license = True
 android.entrypoint = main.py
+
+# Garante que o Gradle use o AndroidX (necessário para KivyMD)
+android.enable_androidx = True
 
 [buildozer]
 log_level = 2
