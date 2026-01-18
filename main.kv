@@ -3,38 +3,35 @@ MDScreen:
     MDBoxLayout:
         orientation: 'vertical'
         padding: dp(20)
-        spacing: dp(15)
+        spacing: dp(10)
         MDLabel:
             text: "SUPREMEFLY TOUCH"
             halign: "center"
             font_style: "H4"
             theme_text_color: "Custom"
-            text_color: 0.2, 1, 0.2, 1
+            text_color: 0, 1, 0, 1
         MDBoxLayout:
             orientation: 'vertical'
-            spacing: dp(40)
-            padding: [0, dp(20)]
             MDSlider:
                 id: sensi_x
                 min: 0
                 max: 1000
                 value: 800
-                color: 0.2, 1, 0.2, 1
+                color: 0, 1, 0, 1
             MDSlider:
                 id: sensi_y
                 min: 0
                 max: 1000
                 value: 800
-                color: 0.2, 1, 0.2, 1
+                color: 0, 1, 0, 1
         MDFillRoundFlatButton:
-            text: "OTIMIZAR HARDWARE"
+            text: "APLICAR VIA SHIZUKU"
             size_hint_x: 1
-            md_bg_color: 0.2, 1, 0.2, 1
-            text_color: 0, 0, 0, 1
+            md_bg_color: 0, 1, 0, 1
             on_release: app.apply_optimization()
         MDLabel:
             id: log_status
-            text: "> AGUARDANDO COMANDO"
+            text: "> STATUS: AGUARDANDO"
             halign: "center"
             theme_text_color: "Custom"
-            text_color: 0.2, 1, 0.2, 1
+            text_color: 0, 1, 0, 1
