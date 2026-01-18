@@ -52,3 +52,12 @@ class SupremeFlyApp(MDApp):
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
+    # Adiciona as dependências do Shizuku (AAR)
+android.gradle_dependencies = "dev.rikka.shizuku:api:13.1.0", "dev.rikka.shizuku:provider:13.1.0"
+
+# Repositórios necessários para baixar a API
+android.add_repositories = https://maven.google.com, https://mvn.rikka.app/repository/maven-public/
+
+# Permissão específica
+android.permissions = INTERNET, WRITE_SECURE_SETTINGS, QUERY_ALL_PACKAGES
+android.manifest.queries = moe.shizuku.privileged.api
