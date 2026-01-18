@@ -3,54 +3,65 @@
 MDScreen:
     md_bg_color: 0, 0, 0, 1
 
-    Widget:
-        canvas:
-            Color:
-                rgba: get_color_from_hex('#39FF14')
-            Line:
-                circle: (self.center_x, self.center_y + dp(100), dp(85))
-                width: dp(2)
-
     MDBoxLayout:
         orientation: 'vertical'
-        padding: dp(20)
-        spacing: dp(10)
+        padding: dp(25)
+        spacing: dp(15)
 
         MDLabel:
             text: "SUPREMEFLY TOUCH"
             halign: "center"
             font_style: "H4"
+            bold: True
             theme_text_color: "Custom"
             text_color: get_color_from_hex('#39FF14')
-
-        Widget:
             size_hint_y: None
-            height: dp(150)
-
-        MDSlider:
-            id: sensi_x
-            min: 0
-            max: 1000
-            value: 800
-            color: get_color_from_hex('#39FF14')
-
-        MDSlider:
-            id: sensi_y
-            min: 0
-            max: 1000
-            value: 800
-            color: get_color_from_hex('#39FF14')
-
-        MDFillRoundFlatButton:
-            text: "APLICAR OTIMIZAÇÃO"
-            size_hint_x: 1
-            md_bg_color: get_color_from_hex('#39FF14')
-            text_color: 0, 0, 0, 1
-            on_release: app.apply_hardware_logic()
+            height: dp(60)
 
         MDLabel:
-            id: log_label
-            text: "> AGUARDANDO"
+            text: "OTIMIZAÇÃO DE SENSIBILIDADE"
             halign: "center"
+            theme_text_color: "Secondary"
+            font_style: "Caption"
+
+        # Painel Central de Sliders
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: dp(30)
+            padding: [0, dp(40)]
+
+            MDLabel:
+                text: f"Sensibilidade X: {int(sensi_x.value)}"
+                theme_text_color: "Primary"
+            MDSlider:
+                id: sensi_x
+                min: 0
+                max: 1000
+                value: 800
+                color: get_color_from_hex('#39FF14')
+
+            MDLabel:
+                text: f"Sensibilidade Y: {int(sensi_y.value)}"
+                theme_text_color: "Primary"
+            MDSlider:
+                id: sensi_y
+                min: 0
+                max: 1000
+                value: 800
+                color: get_color_from_hex('#39FF14')
+
+        MDFillRoundFlatButton:
+            text: "APLICAR VIA SHIZUKU"
+            size_hint_x: 1
+            height: dp(50)
+            md_bg_color: get_color_from_hex('#39FF14')
+            text_color: 0, 0, 0, 1
+            on_release: app.apply_optimization()
+
+        MDLabel:
+            id: log_status
+            text: "> SISTEMA PRONTO"
+            halign: "center"
+            font_style: "Button"
             theme_text_color: "Custom"
             text_color: get_color_from_hex('#39FF14')
