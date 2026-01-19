@@ -3,9 +3,9 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 # Ubuntu 22 é mais estável para Kivy/NDK 25b
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
+      - name: Checkout Código
         uses: actions/checkout@v4
 
       - name: Setup Java 17
@@ -19,12 +19,9 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Hard Clean NDK
+      - name: Limpeza de Ambiente
         run: |
-          # Deleta qualquer rastro de NDKs pré-instalados que causam conflito
           sudo rm -rf /usr/local/lib/android/sdk/ndk
-          sudo rm -rf /usr/local/lib/android/sdk/ndk-bundle
-          # Limpa variáveis que o GitHub Actions força
           echo "ANDROID_NDK_HOME=" >> $GITHUB_ENV
           echo "ANDROID_NDK_ROOT=" >> $GITHUB_ENV
 
@@ -33,11 +30,9 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
-      - name: Compilar APK
+      - name: Build APK Final
         run: |
-          # Garante que o buildozer não veja os caminhos antigos
           export ANDROID_NDK_HOME=""
-          export ANDROID_NDK_ROOT=""
           buildozer android debug
         env:
           ACCEPT_SDK_LICENSE: "y"
@@ -45,5 +40,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SupremeFly-Native-API
+          name: SupremeFly-Native-Final
           path: bin/*.apk
