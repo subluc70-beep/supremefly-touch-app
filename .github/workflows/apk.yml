@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Código
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Java 17
@@ -19,26 +19,31 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Limpeza de Ambiente
+      - name: Removendo Conflitos (NDK Fix)
         run: |
           sudo rm -rf /usr/local/lib/android/sdk/ndk
+          sudo rm -rf /usr/local/lib/android/sdk/ndk-bundle
           echo "ANDROID_NDK_HOME=" >> $GITHUB_ENV
-          echo "ANDROID_NDK_ROOT=" >> $GITHUB_ENV
+
+      - name: Instalar Ferramentas de Build
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libsqlite3-dev sqlite3 bzip2 libbz2-dev zlib1g-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget curl libtool-bin zip unzip
 
       - name: Instalar Buildozer
         run: |
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
-      - name: Build APK Final
+      - name: Compilação Final
         run: |
           export ANDROID_NDK_HOME=""
           buildozer android debug
         env:
           ACCEPT_SDK_LICENSE: "y"
 
-      - name: Upload APK
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: SupremeFly-Native-Final
+          name: SupremeFly-V11-Stable
           path: bin/*.apk
