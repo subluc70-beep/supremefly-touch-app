@@ -9,34 +9,38 @@ class SupremeFlyApp(MDApp):
         self.theme_cls.primary_palette = "Green"
         return Builder.load_file('principal.kv')
 
-    def check_shizuku_status(self):
-        if platform == 'android':
-            from jnius import autoclass
-            try:
-                Shizuku = autoclass('moe.shizuku.privileged.api.Shizuku')
-                if Shizuku.pingBinder():
-                    PackageManager = autoclass('android.content.pm.PackageManager')
-                    if Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED:
-                        return "CONECTADO"
-                    else:
-                        Shizuku.requestPermission(0)
-                        return "AGUARDANDO PERMISSÃO"
-                return "SHIZUKU DESLIGADO"
-            except Exception as e:
-                return f"ERRO API: {str(e)}"
-        return "MODO DESENVOLVEDOR"
-
     def apply_optimization(self):
-        status = self.check_shizuku_status()
-        self.root.ids.log_status.text = f"> {status}"
-        
-        if status == "CONECTADO":
-            x = self.root.ids.sensi_x.value / 1000
-            y = self.root.ids.sensi_y.value / 1000
-            # Comando via shell autorizado pelo binder
-            os.system(f"sh /data/local/tmp/rish -c 'settings put global touch.pressure.scale {x} && settings put global touch.size.scale {y}'")
-            self.root.ids.log_status.text = f"> OTIMIZADO: {x}"
-            self.root.ids.log_status.text_color = [0, 1, 0, 1]
+        if platform == 'android':
+            # Conversão precisa para escala do Android
+            val_x = self.root.ids.sensi_x.value / 1000
+            val_y = self.root.ids.sensi_y.value / 1000
+            
+            # Comandos de Hardware (Sensibilidade de Pressão e Tamanho do Toque)
+            cmd = (f"settings put global touch.pressure.scale {val_x} && "
+                   f"settings put global touch.size.scale {val_y}")
+            
+            # Lista de execução prioritária (API Shizuku -> ADB -> Shell)
+            methods = [
+                f"sh /data/local/tmp/rish -c '{cmd}'", # Método Nativo Shizuku
+                f"rish -c '{cmd}'",                   # Atalho Shizuku
+                f"su -c '{cmd}'",                     # Fallback Root
+                cmd                                   # Fallback ADB direto
+            ]
+            
+            success = False
+            for m in methods:
+                if os.system(m) == 0:
+                    success = True
+                    break
+            
+            if success:
+                self.root.ids.log_status.text = f"> HARDWARE OTIMIZADO: {val_x}"
+                self.root.ids.log_status.text_color = [0, 1, 0, 1]
+            else:
+                self.root.ids.log_status.text = "> ERRO: REINICIE O SHIZUKU"
+                self.root.ids.log_status.text_color = [1, 0, 0, 1]
+        else:
+            print("Executando em ambiente de testes (PC)")
 
 if __name__ == '__main__':
     SupremeFlyApp().run()
