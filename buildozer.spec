@@ -4,17 +4,15 @@ package.name = supremeflytouch
 package.domain = org.supremefly
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
-version = 9.1.0
-
+version = 11.0.0
 requirements = python3, kivy==2.3.0, kivymd==1.2.0, pyjnius, pillow
+orientation = portrait
 
-# Injeção correta das bibliotecas Shizuku
-android.gradle_dependencies = "dev.rikka.shizuku:api:13.1.0", "dev.rikka.shizuku:provider:13.1.0"
-android.add_repositories = https://mvn.rikka.app/repository/maven-public/
-
-android.permissions = INTERNET, WRITE_SECURE_SETTINGS, QUERY_ALL_PACKAGES, FOREGROUND_SERVICE
+# Permissões cruciais para o Shizuku
+android.permissions = INTERNET, WRITE_SECURE_SETTINGS, QUERY_ALL_PACKAGES
 android.manifest.queries = moe.shizuku.privileged.api
 
+# Estabilidade de Compilação
 android.api = 33
 android.minapi = 29
 android.ndk = 25b
